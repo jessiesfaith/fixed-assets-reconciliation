@@ -1,0 +1,2044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fixed Assets Reconciliation — Full-Cycle PP&amp;E, Depreciation &amp; SOX Close (Preview)</title>
+<meta name="description" content="Full-cycle fixed-assets (PP&E) reconciliation: gross cost and accumulated-depreciation roll-forwards to net book value, FA subledger-to-GL control tie-out, CIP, capitalization policy, physical existence verification, depreciation, impairment, disposals, transfers, ASC 842 leases, book-vs-tax depreciation, and a delegation-of-authority approval matrix. Workflow and analysis only; not accounting, tax, or audit advice." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0a0a; --panel:#141414; --panel2:#1c1c1c; --ink:#fafaf7; --muted:#a8a59e; --line:rgba(255,255,255,.12);
+    --indigo:#00c805; --indigo-soft:rgba(0,200,5,.12); --indigo-ink:#34d840; --accent-ink:#001a00;
+    --amber:#d2a23a; --amber-soft:rgba(200,154,45,.16); --amber-line:rgba(200,154,45,.42);
+    --green:#00c805; --green-soft:rgba(0,200,5,.14); --green-line:rgba(0,200,5,.42);
+    --red:#ef5d5d; --red-soft:rgba(239,93,93,.14); --red-line:rgba(239,93,93,.42);
+    --blue:#9db4e8; --blue-soft:rgba(26,37,64,.55);
+    --violet:#b69be8; --violet-soft:rgba(120,90,200,.18);
+    --rf:#37cdd6; --rf-soft:rgba(55,205,214,.15); --rf-line:rgba(55,205,214,.42);
+    --acc:#e0a3d6; --acc-soft:rgba(224,163,214,.14); --acc-line:rgba(224,163,214,.42);
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 26px rgba(0,0,0,.5);
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:'Outfit',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45;-webkit-font-smoothing:antialiased;font-size:15px}
+  a{color:var(--indigo)}
+  h1,h2,h3,h4{margin:0;font-weight:680;letter-spacing:-.01em}
+  h2{font-size:25px;font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;letter-spacing:0}
+  h3{font-size:16px}
+  p{margin:.35em 0}
+  small{color:var(--muted)} .muted{color:var(--muted)}
+  .mono{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+
+  .preview-banner{background:linear-gradient(90deg,#00c805 0%,#006d04 55%,#c89a2d 100%);color:#001a00;text-align:center;font-size:13px;padding:8px 14px;position:sticky;top:0;z-index:40}
+  .preview-banner strong{font-weight:700}
+
+  header.app{background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:33px;z-index:30}
+  .header-inner{max-width:1660px;margin:0 auto;padding:13px 26px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:10px}
+  .logo{width:34px;height:34px;border-radius:9px;background:var(--indigo);display:grid;place-items:center;color:var(--accent-ink);font-weight:800;font-size:15px}
+  .brand .name{font-size:22px;font-weight:600;letter-spacing:0;font-family:'Cormorant Garamond',Georgia,serif}
+  .brand .sub{font-size:11px;color:var(--muted);margin-top:-2px}
+  .header-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+  button{font-family:inherit;cursor:pointer;border:0;border-radius:10px;font-size:13px;font-weight:600;padding:8px 12px;transition:.12s;display:inline-flex;align-items:center;gap:6px}
+  button:active{transform:translateY(1px)}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  .btn-primary{background:var(--indigo);color:var(--accent-ink)}
+  .btn-primary:hover{background:#00e006}
+  .btn-ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+  .btn-ghost:hover{border-color:rgba(255,255,255,.2);background:#242424}
+  .btn-soft{background:var(--indigo-soft);color:var(--indigo-ink)}
+  .btn-soft:hover{background:rgba(0,200,5,.2)}
+  .btn-danger{background:var(--panel2);color:var(--red);border:1px solid var(--red-line)}
+  .btn-danger:hover{background:var(--red-soft)}
+  .btn-xs{padding:5px 9px;font-size:12px;border-radius:8px}
+  .btn-row{display:flex;gap:8px;flex-wrap:wrap}
+
+  /* Shell: left vertical sidebar + content */
+  .shell{max-width:1660px;margin:0 auto;display:flex;align-items:flex-start;gap:0}
+  .sidenav{width:256px;flex:none;position:sticky;top:96px;align-self:flex-start;max-height:calc(100vh - 108px);overflow:auto;padding:16px 11px 28px;border-right:1px solid var(--line);scrollbar-width:thin}
+  .content{flex:1;min-width:0;padding:8px 26px 90px}
+  .navgroup{margin-bottom:13px}
+  .navgroup-h{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;padding:3px 10px 4px}
+  .navtab{display:flex;width:100%;align-items:center;justify-content:space-between;gap:8px;padding:9px 12px;font-size:14px;font-weight:600;color:var(--muted);background:none;border:0;border-left:2px solid transparent;border-radius:0 8px 8px 0;text-align:left;white-space:nowrap}
+  .navtab:hover{color:var(--ink);background:var(--panel2)}
+  .navtab.active{color:var(--indigo-ink);background:var(--indigo-soft);border-left-color:var(--indigo)}
+  .navtab .navlbl{display:inline-flex;align-items:center;gap:8px;min-width:0}
+  .navtab .navnum{font-size:10.5px;font-weight:800;color:var(--muted);background:var(--panel2);border-radius:5px;padding:1px 6px;min-width:21px;text-align:center;flex:none}
+  .navtab.active .navnum{background:var(--indigo);color:var(--accent-ink)}
+  .navtab .pip{font-size:10px;background:var(--panel2);color:var(--muted);padding:1px 7px;border-radius:99px;font-weight:700;flex:none}
+  .navtab.active .pip{background:var(--indigo);color:var(--accent-ink)}
+  @media(max-width:820px){
+    .shell{flex-direction:column}
+    .sidenav{position:static;width:100%;max-height:none;border-right:0;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:4px;padding:10px 14px}
+    .navgroup{margin-bottom:0;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+    .navgroup-h{display:none}
+    .navtab{width:auto;border-left:0;border-radius:8px;padding:7px 11px}
+    .navtab.active{border-left:0}
+    .content{padding:14px 14px 90px;width:100%}
+  }
+
+  section.block{margin-top:22px}
+  .section-head{display:flex;align-items:baseline;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+  .section-head .eyebrow{font-size:11.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--indigo);font-weight:700}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .card.pad{padding:16px}
+  .grid{display:grid;gap:14px}
+  .g6{grid-template-columns:repeat(6,1fr)} .g5{grid-template-columns:repeat(5,1fr)} .g4{grid-template-columns:repeat(4,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)} .g2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:1040px){.g6,.g5{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:900px){.g4{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}}
+  @media(max-width:620px){.g6,.g5,.g4,.g3{grid-template-columns:1fr}.header-actions{width:100%}}
+
+  .tile{padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--panel);display:flex;flex-direction:column;gap:5px}
+  .tile .big{font-size:25px;font-weight:780;letter-spacing:-.02em}
+  .tile .lbl{font-size:12.5px;color:var(--muted);font-weight:600}
+  .tile .ic{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-size:15px;background:var(--indigo-soft)}
+  .tile .top{display:flex;align-items:center;justify-content:space-between}
+  .tile .delta{font-size:12px;font-weight:700}
+  .up{color:var(--green)} .down{color:var(--red)} .flat{color:var(--muted)}
+
+  .badge{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;padding:4px 10px;border-radius:999px;line-height:1;border:1px solid transparent;white-space:nowrap}
+  .b-amber{background:var(--amber-soft);color:var(--amber);border-color:var(--amber-line)}
+  .b-green{background:var(--green-soft);color:var(--green);border-color:var(--green-line)}
+  .b-blue{background:var(--blue-soft);color:var(--blue)}
+  .b-indigo{background:var(--indigo-soft);color:var(--indigo-ink)}
+  .b-red{background:var(--red-soft);color:var(--red);border-color:var(--red-line)}
+  .b-violet{background:var(--violet-soft);color:var(--violet)}
+  .b-gray{background:var(--panel2);color:var(--muted)}
+  .badges{display:flex;gap:7px;flex-wrap:wrap}
+
+  .disclaimer{font-size:12px;color:var(--amber);background:var(--amber-soft);border:1px solid var(--amber-line);border-radius:10px;padding:9px 12px;display:flex;gap:8px;align-items:flex-start}
+  .disclaimer.tight{margin-top:10px}
+  .legal-foot{font-size:11.5px;color:var(--muted);margin-top:8px}
+
+  /* Tables */
+  .tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+  table.tbl{width:100%;border-collapse:collapse;font-size:13.5px;min-width:560px}
+  table.tbl th,table.tbl td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+  table.tbl th{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700;position:sticky;top:0;background:var(--panel2)}
+  table.tbl td.num,table.tbl th.num{text-align:right;font-variant-numeric:tabular-nums}
+  table.tbl tr:last-child td{border-bottom:0}
+  table.tbl tr:hover td{background:rgba(255,255,255,.02)}
+  table.tbl tfoot td{font-weight:700;border-top:2px solid var(--line);background:var(--panel2)}
+  table.tbl tr.tot td{font-weight:700;background:var(--indigo-soft)}
+  .gl-tag{font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:6px;background:var(--panel2);color:var(--muted);border:1px solid var(--line)}
+
+  /* Roll-forward */
+  .rf{display:flex;flex-direction:column;gap:0}
+  .rf .rfrow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px dashed var(--line);font-size:15px}
+  .rf .rfrow .lab{display:flex;align-items:center;gap:9px;flex-wrap:nowrap;min-width:0}
+  .rf .rfrow .lab > span{white-space:nowrap}
+  .rf .rfrow .val{white-space:nowrap;flex:none}
+  .rf .rfrow .sgn{width:18px;text-align:center;font-weight:800;color:var(--muted);flex:none}
+  .rf .rfrow.add .sgn{color:var(--green)} .rf .rfrow.sub .sgn{color:var(--red)}
+  .rf .rfrow .val{font-variant-numeric:tabular-nums;font-weight:680;color:var(--rf)}
+  .rf.acc .rfrow .val{color:var(--acc)}
+  .rf .rfrow.begin,.rf .rfrow.end{font-weight:740;font-size:16.5px;border-bottom:0}
+  .rf .rfrow.end{border-top:2px solid var(--line);margin-top:4px;padding-top:12px}
+  .rf .rfrow.memo{opacity:.8}
+  .rf .rfrow.memo .val{color:var(--muted)}
+  .rf-jump{font-size:10px;color:var(--rf);cursor:pointer;border:1px solid var(--rf-line);border-radius:6px;padding:1px 6px;background:var(--rf-soft);font-weight:700;white-space:nowrap}
+  .rf-jump:hover{background:var(--rf);color:#001}
+  /* Roll-forward tie color — any total that flows into a PP&E roll-forward */
+  .rf-tied{color:var(--rf)!important;font-weight:740}
+  .acc-tied{color:var(--acc)!important;font-weight:740}
+  .rf-legend{font-size:11.5px;color:var(--rf);background:var(--rf-soft);border:1px solid var(--rf-line);border-radius:8px;padding:6px 11px;display:inline-flex;gap:7px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+  .rf-legend.acc{color:var(--acc);background:var(--acc-soft);border-color:var(--acc-line)}
+  .rf-legend .sw{width:11px;height:11px;border-radius:3px;background:var(--rf);display:inline-block;flex:none}
+  .rf-legend.acc .sw{background:var(--acc)}
+  .rf-chip{font-size:10px;font-weight:700;color:var(--rf);background:var(--rf-soft);border:1px solid var(--rf-line);border-radius:6px;padding:1px 7px;white-space:nowrap}
+  .rf-chip.acc{color:var(--acc);background:var(--acc-soft);border-color:var(--acc-line)}
+  /* "Ties to roll-forward" panel shown on each contributing tab */
+  .rftie{border-color:var(--rf-line);background:linear-gradient(180deg,var(--rf-soft),transparent)}
+  .rftie-head{display:flex;align-items:center;gap:9px;margin-bottom:8px;font-size:14.5px;flex-wrap:wrap}
+  .rftie-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 2px;border-bottom:1px dashed var(--line);font-size:14px}
+  .rftie-row .rftie-lab{display:flex;align-items:center;gap:8px;color:var(--ink);min-width:0}
+  .rftie-row .sgn{font-weight:800;width:14px;text-align:center;flex:none}
+  .rftie-row .sgn.pos{color:var(--green)} .rftie-row .sgn.neg{color:var(--red)}
+  .rftie-row .val,.rftie-row .mono{white-space:nowrap;flex:none}
+  .rftie-head .rftie-actions{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+  .rftie-line{border-bottom:1px dashed var(--line)}
+  .rftie-line .rftie-row{border-bottom:0;padding-bottom:3px}
+  .rftie-row.clickable{cursor:pointer;user-select:none}
+  .rftie-row.clickable:hover{background:rgba(255,255,255,.025)}
+  .rftie-row .chev{font-size:11px;color:var(--muted);transition:.16s;display:inline-block;width:11px;flex:none}
+  .rftie-line.open .chev{transform:rotate(90deg)}
+  .rftie-detwrap{display:flex;flex-direction:column;gap:3px;padding:0 2px 10px 24px}
+  .rftie-det{display:flex;align-items:center;gap:12px;font-size:12.5px;color:var(--muted)}
+  .rftie-det-ref{flex:none;min-width:84px;color:var(--ink);font-weight:600}
+  .rftie-det-desc{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rftie-det .mono{flex:none;white-space:nowrap}
+  .rftie-total{border-bottom:0;border-top:2px solid var(--rf-line);margin-top:3px;padding-top:11px;font-weight:740}
+  .rf .rfrow .gl-tag{font-size:10px;padding:1px 6px}
+  .rf .rfrow.begin .gl-tag,.rf .rfrow.end .gl-tag{font-size:10.5px}
+  .rf .rfrow.expandable{cursor:pointer;user-select:none}
+  .rf .rfrow.expandable:hover{background:rgba(255,255,255,.025)}
+  .rf .rfrow .chev{font-size:11px;color:var(--muted);transition:.16s;display:inline-block;width:11px}
+  .rf .rfrow.expandable.open .chev{transform:rotate(90deg)}
+  .rf .rfrow .gl-mini{display:inline-flex;gap:4px;margin-left:2px}
+  @media(max-width:560px){.rf .rfrow .gl-mini{display:none}}
+  .rf .rfrow .rf-count{font-size:10.5px;background:var(--panel2);color:var(--muted);padding:1px 7px;border-radius:99px;font-weight:700}
+  .rf-detail{padding:4px 0 12px 26px;animation:rfslide .16s ease-out}
+  .rf-detail table.tbl{min-width:0}
+  .rf-detail table.tbl.rf-tbl th,.rf-detail table.tbl.rf-tbl td{padding:6px 9px;font-size:11.5px}
+  .rf-detail .gl-tag{font-size:10px;padding:1px 5px}
+  @keyframes rfslide{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+
+  .snap{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:11px;background:var(--panel);font-size:14px;margin-top:10px}
+  .snap .dot{width:9px;height:9px;border-radius:50%;flex:none} .snap b{font-weight:660}
+
+  /* Sub-tabs (segmented) */
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel2)}
+  .seg button{border-radius:0;background:none;color:var(--muted);padding:7px 14px}
+  .seg button.active{background:var(--indigo);color:var(--accent-ink)}
+
+  /* Forms */
+  .field{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+  .field label{font-size:12px;font-weight:600;color:var(--muted)}
+  .field input,.field select,.field textarea{font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:var(--panel2);color:var(--ink);width:100%}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--indigo-soft);border-color:var(--indigo)}
+  .inline-edit{font-family:inherit;font-size:13px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--ink);width:150px;text-align:right;font-variant-numeric:tabular-nums}
+  .form-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:0 12px}
+  @media(max-width:900px){.form-grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:560px){.form-grid{grid-template-columns:1fr}}
+
+  /* Funnel / progress bars */
+  .fnl{display:flex;flex-direction:column;gap:9px}
+  .fnl-row{display:grid;grid-template-columns:190px 1fr 110px;align-items:center;gap:10px}
+  .fnl-lab{display:flex;align-items:center;gap:7px;font-size:12px}
+  .fnl-bar{height:14px;background:var(--panel2);border-radius:6px;overflow:hidden}
+  .fnl-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--indigo),#9db4e8);border-radius:6px;min-width:3px}
+  .fnl-val{text-align:right;font-size:12.5px;font-weight:640}
+  @media(max-width:560px){.fnl-row{grid-template-columns:130px 1fr 88px}}
+
+  /* Location / custodian map */
+  .zone{margin-bottom:16px}
+  .zone-head{display:flex;align-items:baseline;gap:10px;margin-bottom:8px;font-size:14px}
+  .zone-head .muted{font-size:12px}
+  .bin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .bin{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:10px}
+  .bin.empty{opacity:.6;border-style:dashed}
+  .bin-id{font-size:12px;font-weight:700;color:var(--indigo-ink)}
+  .bin-sku{font-size:12px;margin:2px 0 7px}
+  .bin-bar{height:7px;background:var(--panel2);border-radius:99px;overflow:hidden}
+  .bin-bar i{display:block;height:100%;border-radius:99px}
+  .bin-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:5px;font-variant-numeric:tabular-nums}
+
+  /* Cost-class stack bars */
+  .coststack{display:flex;height:13px;border-radius:5px;overflow:hidden;background:var(--panel2);min-width:120px}
+  .coststack i{display:block;height:100%}
+  .leg{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);align-items:center;margin-top:8px}
+  .leg .k{display:flex;align-items:center;gap:5px} .leg .sw{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+  /* Chart */
+  .chart-card{padding:14px}
+  .chart-wrap{width:100%;overflow:hidden}
+  svg.chart{width:100%;height:auto;display:block}
+  .chart-legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:6px;align-items:center}
+  .chart-legend .k{display:flex;align-items:center;gap:6px}
+  .chart-legend .bar{width:12px;height:12px;border-radius:3px;background:var(--indigo-soft);border:1px solid var(--green-line)}
+  .chart-legend .ln{width:18px;height:0;border-top:2px solid var(--amber)}
+
+  /* Sign-off */
+  .signoff{display:flex;gap:12px;flex-wrap:wrap}
+  .signoff .so{flex:1;min-width:200px;border:1px solid var(--line);border-radius:11px;padding:12px;background:var(--panel2)}
+  .signoff .so .role{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+  .signoff .so .who{font-size:14px;font-weight:660;margin-top:4px}
+  .signoff .so .when{font-size:11.5px;color:var(--muted);margin-top:2px}
+  .signoff .so.signed{border-color:var(--green-line);background:var(--green-soft)}
+
+  .logrow{display:flex;gap:10px;font-size:12px;padding:7px 0;border-bottom:1px dashed var(--line);align-items:flex-start}
+  .logrow .when{color:var(--muted);min-width:96px;flex:none}
+  .empty{padding:16px;text-align:center;color:var(--muted);font-size:13px;border:1px dashed var(--line);border-radius:11px;background:var(--panel2);margin-top:10px}
+
+  .exp{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid var(--line);border-radius:11px;background:var(--panel)}
+  .exp .ic{width:32px;height:32px;border-radius:8px;background:var(--indigo-soft);display:grid;place-items:center;font-size:15px;flex:none}
+  .exp .meta{flex:1;min-width:0}.exp .meta .t{font-size:13px;font-weight:660}.exp .meta .d{font-size:11.5px;color:var(--muted)}
+
+  .kvs{display:grid;grid-template-columns:auto 1fr;gap:7px 14px;font-size:14.5px;align-items:center}
+  .kvs .k{color:var(--muted)} .kvs .v{text-align:right;font-variant-numeric:tabular-nums;font-weight:640}
+  .kvs .sec{grid-column:1/-1;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700;margin-top:8px;border-top:1px solid var(--line);padding-top:8px}
+  .lock-note{font-size:12px;color:var(--muted);margin-top:8px}
+  .row-flex{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:var(--panel2);color:var(--muted);border:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="preview-banner">🏗️ <strong>Preview</strong> — Fixed Assets Reconciliation workspace. Sample data, runs entirely in your browser. Workflow &amp; analysis only — not accounting, tax, or audit advice.</div>
+
+<header class="app">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="logo">FI</div>
+      <div>
+        <div class="name">Fixed Assets Reconciliation</div>
+        <div class="sub">Capex · CIP · register · existence · depreciation · impairment · disposals · leases · book-vs-tax</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <span id="periodBadge" class="badge b-indigo">—</span>
+      <span id="statusBadge" class="badge b-gray">—</span>
+      <button class="btn-ghost btn-xs" onclick="resetAll()">↺ Reset sample</button>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <aside class="sidenav" id="sidenav"></aside>
+  <main class="content">
+    <div id="view"></div>
+    <div class="legal-foot">
+      Fixed Assets Reconciliation is a workflow &amp; analysis workspace. It organizes a PP&amp;E reconciliation and computes schedules from
+      figures you enter or import; it does not post journal entries to any ledger, produce financial statements, or constitute
+      accounting, tax, or audit advice. Validate all figures against your fixed-asset system of record before relying on them.
+    </div>
+  </main>
+</div>
+
+<script>
+/* ---------------------------------------------------------------------------
+   Fixed Assets Reconciliation — single-file workspace (vanilla JS, localStorage)
+   Two control roll-forwards (gross cost + accumulated depreciation -> net book
+   value) + a CIP sub-roll-forward, all derived from a double-entry journal.
+   --------------------------------------------------------------------------- */
+const LS_KEY='fa_recon_v2';
+const $=id=>document.getElementById(id);
+const money=n=>(n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString();
+const money2=n=>(n<0?'-$':'$')+Math.abs(n).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+const moneyK=n=>{const a=Math.abs(n);if(a>=1e6)return (n<0?'-$':'$')+(a/1e6).toFixed(2)+'M';if(a>=1e3)return (n<0?'-$':'$')+(a/1e3).toFixed(0)+'K';return money(n);};
+const num=n=>Math.round(n).toLocaleString();
+const pct=n=>(n>=0?'+':'')+n.toFixed(1)+'%';
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* Chart of accounts touched by the fixed-asset cycle */
+const ACC={
+  land:     {code:'1500',name:'Land',normal:'D',cls:1},
+  buildings:{code:'1510',name:'Buildings & improvements',normal:'D',cls:1},
+  machinery:{code:'1520',name:'Lab & manufacturing equipment',normal:'D',cls:1},
+  furniture:{code:'1530',name:'Furniture & fixtures',normal:'D',cls:1},
+  computers:{code:'1540',name:'Computers & IT hardware',normal:'D',cls:1},
+  vehicles: {code:'1550',name:'Vehicles',normal:'D',cls:1},
+  leasehold:{code:'1560',name:'Leasehold improvements',normal:'D',cls:1},
+  cip:      {code:'1590',name:'Construction in progress',normal:'D'},
+  dispclr:  {code:'1599',name:'Asset disposal clearing',normal:'D'},
+  rou:      {code:'1580',name:'ROU asset — operating leases',normal:'D'},
+  accumdep: {code:'1600',name:'Accumulated depreciation',normal:'C'},
+  accumrou: {code:'1605',name:'Accumulated amortization — ROU',normal:'C'},
+  depexp:   {code:'6500',name:'Depreciation & amortization expense',normal:'D'},
+  impair:   {code:'6510',name:'Impairment loss',normal:'D'},
+  gain:     {code:'7100',name:'Gain on asset disposal',normal:'C'},
+  loss:     {code:'7200',name:'Loss on disposal / write-off',normal:'D'},
+  ap:       {code:'2100',name:'Accounts payable',normal:'C'},
+  capaccr:  {code:'2180',name:'Capex accruals & retention',normal:'C'},
+  leaseliab:{code:'2400',name:'Lease liability',normal:'C'},
+  intangible:{code:'1700',name:'Intangible assets (finite-lived)',normal:'D'},
+  accumamort:{code:'1710',name:'Accumulated amortization — intangibles',normal:'C'},
+  amortexp: {code:'6505',name:'Amortization expense — intangibles',normal:'D'},
+  aroasset: {code:'1595',name:'ARO — capitalized retirement cost',normal:'D'},
+  aroliab:  {code:'2500',name:'Asset retirement obligation',normal:'C'},
+  accretion:{code:'6520',name:'ARO accretion expense',normal:'D'},
+  hfs:      {code:'1450',name:'Assets held for sale',normal:'D'},
+  cta:      {code:'3200',name:'Cumulative translation adjustment',normal:'C'},
+  cash:     {code:'1000',name:'Cash',normal:'D'}
+};
+/* In-service depreciable asset classes (1500-1560) + their default policy */
+const ASSET_CLASSES=[
+  {key:'land',     life:0,  method:'None', resid:0},
+  {key:'buildings',life:480,method:'SL',   resid:0},
+  {key:'machinery',life:84, method:'SL',   resid:0},
+  {key:'furniture',life:84, method:'SL',   resid:0},
+  {key:'computers',life:36, method:'SL',   resid:0},
+  {key:'vehicles', life:60, method:'DDB',  resid:0},
+  {key:'leasehold',life:120,method:'SL',   resid:0}
+];
+const COST_ACCTS=ASSET_CLASSES.map(a=>a.key); // accounts that make up gross in-service cost
+const CLASS_COLOR={land:'#7fb27a',buildings:'#9db4e8',machinery:'#00c805',furniture:'#d2a23a',computers:'#37cdd6',vehicles:'#b69be8',leasehold:'#e0a3d6'};
+
+/* Standard fixed-asset transaction types -> double entry + which roll-forward they move.
+   book: 'cost' | 'cip' | 'accum' | 'none'   sign: +1/-1   (@class => the posting's t.acct) */
+const TXN_TYPES={
+  addition:    {label:'Capitalized addition',           dr:'@class', cr:'ap',       book:'cost', sign:1,  grp:'Additions'},
+  cip_spend:   {label:'CIP expenditure',                dr:'cip',    cr:'ap',       book:'cip',  sign:1,  grp:'CIP spend'},
+  cip_capit:   {label:'Placed in service (CIP→FA)',     dr:'@class', cr:'cip',      book:'cost', sign:1,  alsoCip:-1, grp:'CIP capitalized'},
+  disp_cost:   {label:'Disposal — remove cost',         dr:'dispclr',cr:'@class',   book:'cost', sign:-1, grp:'Disposals'},
+  disp_accum:  {label:'Disposal — remove accum. dep.',  dr:'accumdep',cr:'dispclr', book:'accum',sign:-1, grp:'Disposals'},
+  disp_proceeds:{label:'Disposal proceeds (cash)',      dr:'cash',   cr:'dispclr',  book:'none', sign:0,  grp:'Disposals'},
+  disp_gain:   {label:'Gain on disposal',               dr:'dispclr',cr:'gain',     book:'none', sign:0,  grp:'Disposals'},
+  disp_loss:   {label:'Loss on disposal',               dr:'loss',   cr:'dispclr',  book:'none', sign:0,  grp:'Disposals'},
+  depreciation:{label:'Depreciation expense',           dr:'depexp', cr:'accumdep', book:'accum',sign:1,  grp:'Depreciation'},
+  impairment:  {label:'Impairment charge',              dr:'impair', cr:'accumdep', book:'accum',sign:1,  grp:'Impairment'},
+  reclass:     {label:'Reclass between classes',        dr:'@class', cr:'@class2',  book:'none', sign:0,  memo:true, grp:'Reclasses'},
+  rou_add:     {label:'ROU asset — lease commencement', dr:'rou',    cr:'leaseliab',book:'none', sign:0,  grp:'Leases'},
+  rou_amort:   {label:'ROU amortization',               dr:'depexp', cr:'accumrou', book:'none', sign:0,  grp:'Leases'}
+};
+
+/* ---- sample data ---------------------------------------------------------- */
+let _seq=0; function id(){return 'x'+(Date.now().toString(36))+(_seq++).toString(36);}
+const TODAY='2026-06-15';
+function daysUntil(d){ return Math.round((new Date(d+'T00:00:00')-new Date(TODAY+'T00:00:00'))/86400000); }
+function monthsBetween(a,b){const x=new Date(a+'-01'),y=new Date(b+'-01');return (y.getFullYear()-x.getFullYear())*12+(y.getMonth()-x.getMonth());}
+
+/* Period journal — each posting drives the cost / CIP / accum-dep roll-forwards.
+   acct = the asset-class account for @class postings; acct2 = the other class for reclasses. */
+function seedTxns(){
+  return [
+    // Additions (direct-in-service capex)  -> +cost
+    {id:id(),date:'2026-05-06',ref:'CAP-3301',type:'addition',acct:'machinery',memo:'Cryo-EM detector upgrade — Bldg A',amount:2400000},
+    {id:id(),date:'2026-05-12',ref:'CAP-3308',type:'addition',acct:'computers',memo:'GPU compute cluster — genomics core',amount:1250000},
+    {id:id(),date:'2026-05-19',ref:'CAP-3314',type:'addition',acct:'buildings',memo:'Cleanroom HVAC recommissioning',amount:1800000},
+    {id:id(),date:'2026-05-23',ref:'CAP-3319',type:'addition',acct:'furniture',memo:'Office fit-out — 3rd floor',amount:320000},
+    // CIP expenditure  -> +CIP
+    {id:id(),date:'2026-05-04',ref:'CIP-2207',type:'cip_spend',acct:'cip',memo:'Bldg C bioprocessing suite buildout',amount:3200000},
+    {id:id(),date:'2026-05-15',ref:'CIP-2211',type:'cip_spend',acct:'cip',memo:'Pilot-plant automation line',amount:1400000},
+    {id:id(),date:'2026-05-27',ref:'CIP-2216',type:'cip_spend',acct:'cip',memo:'Lab expansion — leasehold works',amount:900000},
+    // Placed in service (CIP -> Buildings)  -> +cost, -CIP
+    {id:id(),date:'2026-05-20',ref:'PIS-1190',type:'cip_capit',acct:'buildings',memo:'Bldg B QC lab — placed in service',amount:4600000},
+    // Disposals — cost removed  -> -cost
+    {id:id(),date:'2026-05-09',ref:'DSP-7741',type:'disp_cost',acct:'machinery',memo:'Retire legacy chromatography skids',amount:1500000},
+    {id:id(),date:'2026-05-16',ref:'DSP-7745',type:'disp_cost',acct:'vehicles',memo:'Sold delivery fleet (3 vans)',amount:420000},
+    {id:id(),date:'2026-05-28',ref:'DSP-7750',type:'disp_cost',acct:'computers',memo:'Scrapped obsolete servers',amount:600000},
+    // Disposals — accumulated depreciation removed  -> -accum
+    {id:id(),date:'2026-05-09',ref:'DSP-7741',type:'disp_accum',acct:'machinery',memo:'A/D on chromatography skids',amount:1350000},
+    {id:id(),date:'2026-05-16',ref:'DSP-7745',type:'disp_accum',acct:'vehicles',memo:'A/D on delivery fleet',amount:360000},
+    {id:id(),date:'2026-05-28',ref:'DSP-7750',type:'disp_accum',acct:'computers',memo:'A/D on obsolete servers',amount:580000},
+    // Disposal proceeds + gain/loss (P&L / cash, not in roll-forward)
+    {id:id(),date:'2026-05-09',ref:'DSP-7741',type:'disp_proceeds',acct:'cash',memo:'Skids — salvage proceeds',amount:90000},
+    {id:id(),date:'2026-05-09',ref:'DSP-7741',type:'disp_loss',acct:'loss',memo:'Loss on skids (NBV 150K − 90K)',amount:60000},
+    {id:id(),date:'2026-05-16',ref:'DSP-7745',type:'disp_proceeds',acct:'cash',memo:'Vans — auction proceeds',amount:75000},
+    {id:id(),date:'2026-05-16',ref:'DSP-7745',type:'disp_gain',acct:'gain',memo:'Gain on vans (75K − NBV 60K)',amount:15000},
+    {id:id(),date:'2026-05-28',ref:'DSP-7750',type:'disp_loss',acct:'loss',memo:'Loss on servers (NBV 20K)',amount:20000},
+    // Depreciation expense (by class)  -> +accum
+    {id:id(),date:'2026-05-31',ref:'DEP-05M',type:'depreciation',acct:'machinery',memo:'May depreciation — equipment',amount:1150000},
+    {id:id(),date:'2026-05-31',ref:'DEP-05B',type:'depreciation',acct:'buildings',memo:'May depreciation — buildings',amount:720000},
+    {id:id(),date:'2026-05-31',ref:'DEP-05C',type:'depreciation',acct:'computers',memo:'May depreciation — IT hardware',amount:430000},
+    {id:id(),date:'2026-05-31',ref:'DEP-05L',type:'depreciation',acct:'leasehold',memo:'May depreciation — leaseholds',amount:180000},
+    {id:id(),date:'2026-05-31',ref:'DEP-05X',type:'depreciation',acct:'furniture',memo:'May depreciation — F&F + vehicles',amount:270000},
+    // Impairment  -> +accum
+    {id:id(),date:'2026-05-31',ref:'IMP-0512',type:'impairment',acct:'machinery',memo:'Idle pilot equipment — impairment',amount:480000},
+    // Reclass between classes (net $0 memo)
+    {id:id(),date:'2026-05-18',ref:'RCL-0440',type:'reclass',acct:'leasehold',acct2:'furniture',memo:'Reclass modular partitions F&F→leasehold',amount:300000},
+    // Leases (ASC 842) — separate ROU roll-forward
+    {id:id(),date:'2026-05-02',ref:'LSE-0091',type:'rou_add',acct:'rou',memo:'New analyzer lease — 5-yr operating',amount:4200000},
+    {id:id(),date:'2026-05-31',ref:'LSE-AMRT',type:'rou_amort',acct:'rou',memo:'May ROU amortization (portfolio)',amount:620000}
+  ];
+}
+/* FA subledger / asset register — representative detail behind the control totals.
+   inSvc=in-service month; lifeMo=useful life (months); method SL/DDB/None; accum=A/D to date. */
+function seedRegister(){
+  return [
+    {id:id(),tag:'FA-100021',name:'Land — Fremont campus',cls:'land',cost:12000000,accum:0,inSvc:'2016-01',lifeMo:0,method:'None',loc:'Fremont, CA',cust:'Facilities',status:'In service'},
+    {id:id(),tag:'FA-100114',name:'Building A — HQ & labs',cls:'buildings',cost:48000000,accum:9600000,inSvc:'2017-03',lifeMo:480,method:'SL',loc:'Fremont, CA',cust:'Facilities',status:'In service'},
+    {id:id(),tag:'FA-100115',name:'Building B — QC lab (new)',cls:'buildings',cost:4600000,accum:0,inSvc:'2026-05',lifeMo:480,method:'SL',loc:'Fremont, CA',cust:'Facilities',status:'In service'},
+    {id:id(),tag:'FA-100210',name:'Cryo-EM microscope',cls:'machinery',cost:6200000,accum:1771000,inSvc:'2022-07',lifeMo:84,method:'SL',loc:'Bldg A — Imaging',cust:'R&D — Imaging',status:'In service'},
+    {id:id(),tag:'FA-100211',name:'NGS sequencing line ×4',cls:'machinery',cost:9800000,accum:3500000,inSvc:'2021-04',lifeMo:84,method:'SL',loc:'Bldg A — Genomics',cust:'Genomics core',status:'In service'},
+    {id:id(),tag:'FA-100212',name:'Bioreactor train (2,000 L)',cls:'machinery',cost:7400000,accum:1850000,inSvc:'2022-11',lifeMo:84,method:'SL',loc:'Bldg C — Bioprocess',cust:'Manufacturing',status:'In service'},
+    {id:id(),tag:'FA-100213',name:'Chromatography skids (legacy)',cls:'machinery',cost:1500000,accum:1350000,inSvc:'2017-06',lifeMo:84,method:'SL',loc:'Bldg C — Bioprocess',cust:'Manufacturing',status:'Disposed'},
+    {id:id(),tag:'FA-100311',name:'GPU compute cluster',cls:'computers',cost:1250000,accum:0,inSvc:'2026-05',lifeMo:36,method:'SL',loc:'Data center',cust:'IT',status:'In service'},
+    {id:id(),tag:'FA-100312',name:'Server estate (obsolete)',cls:'computers',cost:600000,accum:580000,inSvc:'2020-02',lifeMo:36,method:'SL',loc:'Data center',cust:'IT',status:'Disposed'},
+    {id:id(),tag:'FA-100410',name:'Lab furniture & fume hoods',cls:'furniture',cost:5200000,accum:2080000,inSvc:'2019-09',lifeMo:84,method:'SL',loc:'Bldg A',cust:'Facilities',status:'In service'},
+    {id:id(),tag:'FA-100510',name:'Delivery fleet (vans)',cls:'vehicles',cost:420000,accum:360000,inSvc:'2020-05',lifeMo:60,method:'DDB',loc:'Logistics',cust:'Supply chain',status:'Disposed'},
+    {id:id(),tag:'FA-100511',name:'Fork trucks & yard vehicles',cls:'vehicles',cost:680000,accum:300000,inSvc:'2023-01',lifeMo:60,method:'DDB',loc:'Warehouse',cust:'Supply chain',status:'In service'},
+    {id:id(),tag:'FA-100610',name:'Leasehold improvements — Bldg D',cls:'leasehold',cost:14200000,accum:4260000,inSvc:'2021-08',lifeMo:120,method:'SL',loc:'San Diego, CA',cust:'Facilities',status:'In service'},
+    {id:id(),tag:'FA-100611',name:'Cleanroom HVAC upgrade',cls:'buildings',cost:1800000,accum:0,inSvc:'2026-05',lifeMo:480,method:'SL',loc:'Fremont, CA',cust:'Facilities',status:'In service'},
+    {id:id(),tag:'FA-100212b',name:'Office fit-out — 3rd floor',cls:'furniture',cost:320000,accum:0,inSvc:'2026-05',lifeMo:84,method:'SL',loc:'Fremont, CA',cust:'Facilities',status:'In service'}
+  ];
+}
+/* CIP projects — open construction/work-in-progress with % complete & expected in-service. */
+function seedCip(){
+  return [
+    {id:id(),proj:'CIP-BLD-C',name:'Bldg C bioprocessing suite',budget:22000000,spentToDate:16200000,spentPeriod:3200000,pct:74,expSvc:'2026-09',mgr:'Facilities / EPC'},
+    {id:id(),proj:'CIP-AUTO-1',name:'Pilot-plant automation line',budget:8500000,spentToDate:5100000,spentPeriod:1400000,pct:60,expSvc:'2026-08',mgr:'Manufacturing eng.'},
+    {id:id(),proj:'CIP-LH-SD',name:'San Diego lab expansion (leasehold)',budget:6400000,spentToDate:3900000,spentPeriod:900000,pct:61,expSvc:'2026-10',mgr:'Facilities'},
+    {id:id(),proj:'CIP-BLD-B',name:'Bldg B QC lab (capitalized May)',budget:4600000,spentToDate:4600000,spentPeriod:0,pct:100,expSvc:'2026-05',mgr:'Facilities',done:true}
+  ];
+}
+/* Disposals / retirements during the period — proceeds, NBV & gain/loss. */
+function seedDisposals(){
+  return [
+    {id:id(),ref:'DSP-7741',date:'2026-05-09',tag:'FA-100213',name:'Chromatography skids (legacy)',cls:'machinery',cost:1500000,accum:1350000,proceeds:90000,method:'Scrap/salvage',approved:true},
+    {id:id(),ref:'DSP-7745',date:'2026-05-16',tag:'FA-100510',name:'Delivery fleet (3 vans)',cls:'vehicles',cost:420000,accum:360000,proceeds:75000,method:'Auction',approved:true},
+    {id:id(),ref:'DSP-7750',date:'2026-05-28',tag:'FA-100312',name:'Obsolete server estate',cls:'computers',cost:600000,accum:580000,proceeds:0,method:'E-waste',approved:false}
+  ];
+}
+/* Physical existence verification (asset inventory / tag scan) — like a cycle count for FA. */
+function seedVerify(){
+  return [
+    {id:id(),tag:'FA-100210',name:'Cryo-EM microscope',cls:'machinery',nbv:4429000,loc:'Bldg A — Imaging',scanned:true,found:true,cond:'Good'},
+    {id:id(),tag:'FA-100211',name:'NGS sequencing line ×4',cls:'machinery',nbv:6300000,loc:'Bldg A — Genomics',scanned:true,found:true,cond:'Good'},
+    {id:id(),tag:'FA-100212',name:'Bioreactor train (2,000 L)',cls:'machinery',nbv:5550000,loc:'Bldg C — Bioprocess',scanned:true,found:true,cond:'Good'},
+    {id:id(),tag:'FA-100410',name:'Lab furniture & fume hoods',cls:'furniture',nbv:3120000,loc:'Bldg A',scanned:true,found:true,cond:'Fair'},
+    {id:id(),tag:'FA-100610',name:'Leasehold improvements — Bldg D',cls:'leasehold',nbv:9940000,loc:'San Diego, CA',scanned:true,found:true,cond:'Good'},
+    {id:id(),tag:'FA-100511',name:'Fork trucks & yard vehicles',cls:'vehicles',nbv:380000,loc:'Warehouse',scanned:true,found:false,cond:'Not located',note:'1 fork truck not located — investigating (≈$140K NBV)'},
+    {id:id(),tag:'FA-100319',name:'Lab laptops (pool)',cls:'computers',nbv:100000,loc:'Various',scanned:true,found:false,cond:'Not located',note:'Assigned-out laptops, custodian confirmation pending (≈$100K NBV)'},
+    {id:id(),tag:'FA-UNREC-1',name:'Unrecorded asset found — qPCR unit',cls:'machinery',nbv:0,loc:'Bldg A',scanned:true,found:true,cond:'On floor, no tag',note:'Found on floor without tag — add to register'}
+  ];
+}
+/* Leases (ASC 842) ROU asset + lease liability roll-forward inputs. */
+function seedLeases(){
+  return [
+    {id:id(),ref:'LSE-CORE',name:'Genomics analyzers (operating)',type:'Operating',rouOpen:18400000,liabOpen:19100000,amort:360000,interest:78000,payment:300000,termEnd:'2029-04'},
+    {id:id(),ref:'LSE-SD',name:'San Diego office (operating)',type:'Operating',rouOpen:9300000,liabOpen:9800000,amort:170000,interest:42000,payment:180000,termEnd:'2031-07'},
+    {id:id(),ref:'LSE-FLEET',name:'Fleet & equipment (finance)',type:'Finance',rouOpen:4300000,liabOpen:4600000,amort:90000,interest:25000,payment:60000,termEnd:'2028-12'},
+    {id:id(),ref:'LSE-0091',name:'New analyzer lease (commenced May)',type:'Operating',rouOpen:0,liabOpen:0,addRou:4200000,addLiab:4200000,amort:0,interest:0,payment:0,termEnd:'2031-05'}
+  ];
+}
+/* 24-month period series for analytics (capex, depreciation, NBV trend). */
+function seedPeriods(){
+  const out=[]; let y=2024,m=6; let gross=214000000, accum=70000000, cip=9000000;
+  for(let i=0;i<24;i++){
+    const capex=Math.round(4200000+Math.sin(i/12*2*Math.PI)*1500000+i*55000);
+    const dep=Math.round(2450000+i*14000);
+    const disp=Math.round(900000+(i%5===0?1600000:300000));
+    const cipSpend=Math.round(3800000+Math.cos(i/9*2*Math.PI)*1200000);
+    const cipCap=Math.round(i%3===0?5200000:2600000);
+    gross=gross+capex-disp+cipCap; accum=accum+dep-Math.round(disp*0.85); cip=Math.max(0,cip+cipSpend-cipCap);
+    out.push({ym:`${y}-${String(m).padStart(2,'0')}`,capex,dep,disp,cipSpend,cipCap,gross,accum,cip,nbv:gross-accum+cip});
+    m++; if(m>12){m=1;y++;}
+  }
+  return out;
+}
+/* Book-vs-tax depreciation (MACRS) by class — YTD book vs tax, bonus & Sec.179. */
+function seedTax(){
+  return [
+    {cls:'buildings',basis:90600000,bookYtd:3600000,taxYtd:2900000,macrs:'39-yr SL (MACRS RP)',bonus:0,s179:0},
+    {cls:'machinery',basis:96800000,bookYtd:5750000,taxYtd:9200000,macrs:'7-yr 200% DB',bonus:2400000,s179:0},
+    {cls:'computers',basis:16000000,bookYtd:2150000,taxYtd:3600000,macrs:'5-yr 200% DB',bonus:1250000,s179:0},
+    {cls:'furniture',basis:8300000,bookYtd:990000,taxYtd:1480000,macrs:'7-yr 200% DB',bonus:0,s179:320000},
+    {cls:'vehicles',basis:680000,bookYtd:136000,taxYtd:204000,macrs:'5-yr 200% DB',bonus:0,s179:0},
+    {cls:'leasehold',basis:24000000,bookYtd:2400000,taxYtd:3050000,macrs:'15-yr QIP SL',bonus:0,s179:0}
+  ];
+}
+/* Insurance & property-tax schedule — replacement & assessed values by location. */
+function seedInsure(){
+  return [
+    {loc:'Fremont, CA — HQ campus',cls:'Buildings + equipment',nbv:78200000,replace:142000000,assessed:96000000,insured:140000000,policy:'Property all-risk'},
+    {loc:'San Diego, CA — lab',cls:'Leaseholds + equipment',nbv:21800000,replace:34000000,assessed:0,insured:33000000,policy:'Property all-risk'},
+    {loc:'Data center (colo)',cls:'IT hardware',nbv:1250000,replace:2400000,assessed:0,insured:2400000,policy:'Equipment floater'},
+    {loc:'Warehouse & logistics',cls:'Vehicles + racking',nbv:1060000,replace:1900000,assessed:1200000,insured:1800000,policy:'Inland marine'}
+  ];
+}
+
+function defaultState(){
+  return {
+    v:2, tab:'recon',
+    company:'Helixa Biosystems, Inc.', period:'May 2026',
+    // Opening control balances
+    openGrossCost:248000000, openCIP:18500000, openAccum:92000000,
+    openRou:32000000, openLeaseLiab:33500000, openAccumRou:6400000,
+    // FA subledger control (ties to GL by construction) + physical existence net
+    subCost:255850000, subCIP:19400000, subAccum:92940000, physNet:182070000,
+    txns:seedTxns().map(t=>({...t,src:'import',apprStatus:'Posted',apprBy:'Imported (ERP feed)'})),
+    register:seedRegister(), cip:seedCip(), disposals:seedDisposals(),
+    verify:seedVerify(), leases:seedLeases(), periods:seedPeriods(), tax:seedTax(), insure:seedInsure(),
+    subs:seedSubs(), elims:seedElims(), cta:3200000, aro:seedAro(), hfs:seedHfs(), intangibles:seedIntangibles(),
+    // Capitalization policy (SOX control)
+    capThreshold:5000, capLifeMin:12, taxRate:0.21, stateTaxRate:0.0884,
+    exceptions:[
+      {id:id(),when:'2026-05-31',sev:'Open',text:'Physical verification: 1 fork truck (~$140K NBV) and laptop pool (~$100K) not located — custodian confirmation pending; below scrap-materiality, recount scheduled.'},
+      {id:id(),when:'2026-05-31',sev:'Open',text:'Unrecorded qPCR unit found on floor without tag — add to register and capitalize/confirm prior expensing.'},
+      {id:id(),when:'2026-05-31',sev:'Open',text:'CIP-BLD-C bioprocessing suite at 74% — confirm no in-service components depreciating in CIP; ageing 11 months.'},
+      {id:id(),when:'2026-05-31',sev:'Open',text:'Servers disposal DSP-7750 ($600K cost) pending disposal-authorization sign-off before write-off posts.'}
+    ],
+    signoff:{preparer:null,reviewer:null,approver:null}, locked:false
+  };
+}
+
+/* ---- persistence ---------------------------------------------------------- */
+let state=load();
+function load(){ try{const r=localStorage.getItem(LS_KEY); if(r){const s=JSON.parse(r); if(s&&s.v===2) return s;}}catch(e){} return defaultState(); }
+function save(){ try{localStorage.setItem(LS_KEY,JSON.stringify(state));}catch(e){} }
+function resetAll(){ if(confirm('Reset to the sample reconciliation? Your changes will be cleared.')){ state=defaultState(); render(); } }
+
+/* ---- compute engine — dual roll-forward ----------------------------------- */
+function compute(){
+  const B={}; state.txns.forEach(t=>{B[t.type]=(B[t.type]||0)+(+t.amount||0);});
+  const b=k=>B[k]||0;
+  // by-class additions / disposals (for register & analytics)
+  const byClass={}; COST_ACCTS.forEach(k=>byClass[k]={add:0,capit:0,disp:0,dep:0,impair:0});
+  state.txns.forEach(t=>{
+    const k=t.acct; if(!byClass[k]) return;
+    if(t.type==='addition') byClass[k].add+=+t.amount||0;
+    if(t.type==='cip_capit') byClass[k].capit+=+t.amount||0;
+    if(t.type==='disp_cost') byClass[k].disp+=+t.amount||0;
+    if(t.type==='depreciation') byClass[k].dep+=+t.amount||0;
+    if(t.type==='impairment') byClass[k].impair+=+t.amount||0;
+  });
+  const openCost=+state.openGrossCost||0, openCIP=+state.openCIP||0, openAccum=+state.openAccum||0;
+  // Gross cost (in-service) roll-forward
+  const additions=b('addition'), cipCapit=b('cip_capit'), dispCost=b('disp_cost'), reclass=b('reclass');
+  const endCost=openCost+additions+cipCapit-dispCost;
+  // CIP roll-forward
+  const cipSpend=b('cip_spend');
+  const endCIP=openCIP+cipSpend-cipCapit;
+  // Accumulated depreciation roll-forward
+  const deprec=b('depreciation'), impair=b('impairment'), dispAccum=b('disp_accum');
+  const endAccum=openAccum+deprec+impair-dispAccum;
+  // Net book value per GL
+  const netGL=endCost+endCIP-endAccum;
+  // FA subledger control + physical existence
+  const subCost=+state.subCost||0, subCIP=+state.subCIP||0, subAccum=+state.subAccum||0;
+  const subNet=subCost+subCIP-subAccum;
+  const physNet=+state.physNet||0;
+  // Disposal P&L
+  const proceeds=b('disp_proceeds'), gain=b('disp_gain'), loss=b('disp_loss');
+  // Leases (ASC 842)
+  const rouAdd=b('rou_add'), rouAmort=b('rou_amort');
+  return {b,B,byClass,
+    openCost,openCIP,openAccum,additions,cipCapit,dispCost,reclass,endCost,
+    cipSpend,endCIP,deprec,impair,dispAccum,endAccum,netGL,
+    subCost,subCIP,subAccum,subNet,physNet,proceeds,gain,loss,rouAdd,rouAmort,
+    varCost:endCost-subCost, varCIP:endCIP-subCIP, varAccum:endAccum-subAccum,
+    varNetSub:netGL-subNet, varSubPhys:subNet-physNet, varNetPhys:netGL-physNet};
+}
+
+/* ---- depreciation helpers ------------------------------------------------- */
+function monthlyDep(a){
+  if(a.method==='None'||!a.lifeMo) return 0;
+  const base=(+a.cost||0)-(+a.resid||0);
+  if(a.method==='SL') return base/a.lifeMo;
+  if(a.method==='DDB'){ const nbv=(+a.cost||0)-(+a.accum||0); return Math.max(0,nbv*(2/a.lifeMo)); }
+  return 0;
+}
+function nbvOf(a){ return (+a.cost||0)-(+a.accum||0); }
+function classMeta(k){ return ASSET_CLASSES.find(c=>c.key===k)||{life:0,method:'SL'}; }
+
+/* ---- analytics ------------------------------------------------------------ */
+function faAnalytics(){
+  const P=state.periods, n=P.length, latest=P[n-1], prev=P[n-2];
+  const sum=(arr,f)=>arr.reduce((s,p)=>s+f(p),0);
+  const capexMoM=prev?((latest.capex-prev.capex)/prev.capex*100):0;
+  const qCur=P.slice(n-3), qPrev=P.slice(n-6,n-3);
+  const capexQoQ=sum(qPrev,p=>p.capex)?((sum(qCur,p=>p.capex)-sum(qPrev,p=>p.capex))/sum(qPrev,p=>p.capex)*100):0;
+  const yr=latest.ym.slice(0,4);
+  const ytd=P.filter(p=>p.ym.slice(0,4)===yr);
+  const si=P.indexOf(ytd[0]); const ytdPrev=P.slice(Math.max(0,si-12),si-12+ytd.length).filter(Boolean);
+  const capexYTD=sum(ytdPrev,p=>p.capex)?((sum(ytd,p=>p.capex)-sum(ytdPrev,p=>p.capex))/sum(ytdPrev,p=>p.capex)*100):0;
+  const yoyBase=P[n-13];
+  const capexYoY=yoyBase&&yoyBase.capex?((latest.capex-yoyBase.capex)/yoyBase.capex*100):0;
+  return {latest,prev,capexMoM,capexQoQ:{v:capexQoQ},capexYTD:{v:capexYTD,n:ytd.length},capexYoY,
+    ytdCapex:sum(ytd,p=>p.capex),ytdDep:sum(ytd,p=>p.dep),ytdDisp:sum(ytd,p=>p.disp)};
+}
+
+/* ---- tab registry --------------------------------------------------------- */
+const TABS=[['recon','Reconciliation'],['additions','Additions / Capex'],['cip','CIP / In-Progress'],['cappolicy','Capitalize vs Expense'],
+  ['register','Asset Register'],['verify','Physical Verification'],['locations','Locations & Custodians'],
+  ['deprec','Depreciation'],['impair','Impairment & Revaluation'],['lives','Useful Lives & Components'],
+  ['intangibles','Intangibles'],['aro','Asset Retirement (ARO)'],
+  ['disposals','Disposals & Retirements'],['heldforsale','Held for Sale'],['transfers','Transfers & Reclasses'],
+  ['leases','Leases — ROU (ASC 842)'],
+  ['consolidation','Consolidation & FX'],
+  ['gl','GL Transactions'],['liab','Capex Liabilities'],['approvals','Approvals'],
+  ['tax','Tax Depreciation'],['insure','Insurance & Property Tax'],
+  ['analytics','Roll-forward Analytics'],['review','Review & Export']];
+const GROUPS=[
+  {key:'overview',label:'Overview',tabs:['recon']},
+  {key:'acq',label:'Acquisition & CIP',tabs:['additions','cip','cappolicy']},
+  {key:'register',label:'Register & Existence',tabs:['register','verify','locations']},
+  {key:'deprec',label:'Depreciation & Valuation',tabs:['deprec','impair','lives','intangibles','aro']},
+  {key:'disp',label:'Disposals & Transfers',tabs:['disposals','heldforsale','transfers']},
+  {key:'leases',label:'Leases',tabs:['leases']},
+  {key:'multi',label:'Multi-entity',tabs:['consolidation']},
+  {key:'acct',label:'Accounting',tabs:['gl','liab','approvals']},
+  {key:'tax',label:'Tax & Reporting',tabs:['tax','insure']},
+  {key:'analytics',label:'Analytics',tabs:['analytics','review']}
+];
+const TAB_LABEL=Object.fromEntries(TABS);
+const TAB_ORDER=GROUPS.flatMap(g=>g.tabs);
+const TAB_NUM=Object.fromEntries(TAB_ORDER.map((k,i)=>[k,i+1]));
+// Which tab(s) tie out / provide detail for each GL account
+const ACC_TABS={
+  land:['register'],buildings:['register','additions','cip'],machinery:['register','additions','disposals'],
+  furniture:['register','additions'],computers:['register','additions','disposals'],vehicles:['register','disposals'],
+  leasehold:['register','cip'],cip:['cip'],dispclr:['disposals'],rou:['leases'],
+  accumdep:['deprec','disposals'],accumrou:['leases'],depexp:['deprec'],impair:['impair'],
+  gain:['disposals'],loss:['disposals'],ap:['liab'],capaccr:['liab'],leaseliab:['leases'],cash:['disposals'],
+  intangible:['intangibles'],accumamort:['intangibles'],amortexp:['intangibles'],
+  aroasset:['aro'],aroliab:['aro'],accretion:['aro'],hfs:['heldforsale'],cta:['consolidation']
+};
+const RF_ACCTS=['land','buildings','machinery','furniture','computers','vehicles','leasehold','cip','accumdep'];
+function tabNums(keys){return (keys||[]).map(k=>`<span class="rf-jump" onclick="go('${k}')">#${TAB_NUM[k]} ${TAB_LABEL[k]}</span>`).join(' ');}
+
+// Delegation-of-authority / capex authorization (AFE) matrix — ~$500M-revenue company
+const APPROVAL=[
+  {tier:1, min:0,       max:25000,    role:'Department Manager',                  dual:false},
+  {tier:2, min:25000,   max:100000,   role:'Controller',                          dual:false},
+  {tier:3, min:100000,  max:500000,   role:'VP Finance / Capital Committee',       dual:false},
+  {tier:4, min:500000,  max:2500000,  role:'CFO (AFE)',                            dual:true},
+  {tier:5, min:2500000, max:Infinity, role:'CFO + CEO (Board capital approval)',   dual:true}
+];
+function approvalFor(amount){const a=Math.abs(+amount||0);return APPROVAL.find(t=>a>t.min&&a<=t.max)||APPROVAL[0];}
+function apprBand(t){return t.max===Infinity?'> '+money(t.min):money(t.min)+' – '+money(t.max);}
+
+function renderTabbar(){
+  const c=compute();
+  const pip={additions:state.txns.filter(t=>t.type==='addition').length,cip:state.cip.filter(p=>!p.done).length,
+    register:state.register.length,verify:state.verify.filter(v=>!v.found).length,
+    disposals:state.disposals.length,leases:state.leases.length,gl:state.txns.length,
+    approvals:state.txns.filter(t=>t.apprStatus==='Pending').length+state.disposals.filter(d=>!d.approved).length,
+    review:state.exceptions.filter(e=>e.sev==='Open').length};
+  $('sidenav').innerHTML=GROUPS.map(g=>{
+    const tabs=g.tabs.map(k=>{
+      const p=pip[k]; const badge=p?`<span class="pip">${p}</span>`:'';
+      return `<button class="navtab ${state.tab===k?'active':''}" onclick="go('${k}')"><span class="navlbl"><span class="navnum">${TAB_NUM[k]}</span>${TAB_LABEL[k]}</span>${badge}</button>`;
+    }).join('');
+    return `<div class="navgroup"><div class="navgroup-h">${g.label}</div>${tabs}</div>`;
+  }).join('');
+  $('periodBadge').textContent=`${state.period}`;
+  const reconciled=Math.abs(c.varNetSub)<1;
+  $('statusBadge').className='badge '+(state.locked?'b-blue':reconciled?'b-green':'b-amber');
+  $('statusBadge').textContent=state.locked?'🔒 Period locked':reconciled?'✓ Subledger ties to GL':'⚠ Variance to clear';
+}
+function go(t){state.tab=t;render();window.scrollTo({top:0});}
+
+/* ---- roll-forward movement model (single source of truth) ------------------
+   Each line: book ('cost'|'cip'|'accum'), sign, amount, type (journal bucket), tab. */
+function rfMovements(c){
+  return [
+    {book:'cost', sign:1,  label:'Capitalized additions',           amount:c.additions, type:'addition',   tab:'additions'},
+    {book:'cost', sign:1,  label:'Transfers from CIP (placed in svc)',amount:c.cipCapit, type:'cip_capit',  tab:'cip'},
+    {book:'cost', sign:-1, label:'Disposals & retirements (cost)',   amount:c.dispCost,  type:'disp_cost',  tab:'disposals'},
+    {book:'cip',  sign:1,  label:'CIP expenditures',                 amount:c.cipSpend,  type:'cip_spend',  tab:'cip'},
+    {book:'cip',  sign:-1, label:'Transferred to in-service',        amount:c.cipCapit,  type:'cip_capit',  tab:'cip'},
+    {book:'accum',sign:1,  label:'Depreciation expense',             amount:c.deprec,    type:'depreciation',tab:'deprec'},
+    {book:'accum',sign:1,  label:'Impairment charges',               amount:c.impair,    type:'impairment', tab:'impair'},
+    {book:'accum',sign:-1, label:'A/D removed on disposals',         amount:c.dispAccum, type:'disp_accum', tab:'disposals'}
+  ];
+}
+function rfLineDetail(line){
+  const r=(ref,desc,amt)=>({ref,desc,amt});
+  return state.txns.filter(t=>t.type===line.type).sort((a,b)=>a.date<b.date?-1:1)
+    .map(t=>r(t.ref,t.memo,+t.amount||0));
+}
+let rftieOpen={};
+function toggleRftie(k){ rftieOpen[k]=!rftieOpen[k]; render(); }
+function rftieAll(tabKey,n,open){ for(let i=0;i<n;i++){ const k=tabKey+'#'+i; if(open) rftieOpen[k]=true; else delete rftieOpen[k]; } render(); }
+function rfTiePanel(tabKey){
+  const c=compute();
+  const lines=rfMovements(c).filter(l=>l.tab===tabKey);
+  if(!lines.length) return '';
+  const net=lines.reduce((s,l)=>s+l.sign*l.amount,0);
+  const blocks=lines.map((l,i)=>{
+    const key=tabKey+'#'+i, open=!!rftieOpen[key];
+    const det=rfLineDetail(l);
+    const cls=l.book==='accum'?'acc-tied':'rf-tied';
+    const detRows=det.length?det.map(d=>`<div class="rftie-det"><span class="rftie-det-ref mono">${esc(d.ref)}</span><span class="rftie-det-desc">${esc(d.desc)}</span><span class="${cls} mono">${money(d.amt)}</span></div>`).join('')
+      :'<div class="rftie-det muted">No source rows for this period.</div>';
+    const rfLabel=l.book==='cost'?'cost RF':l.book==='cip'?'CIP RF':'A/D RF';
+    return `<div class="rftie-line ${open?'open':''}">
+      <div class="rftie-row clickable" onclick="toggleRftie('${key}')"><span class="rftie-lab"><span class="chev">▸</span><span class="sgn ${l.sign>0?'pos':'neg'}">${l.sign>0?'+':'−'}</span>${esc(l.label)} <span class="pill">${rfLabel}</span> <span class="rf-count">${det.length}</span></span><span class="${cls} mono">${money(l.amount)}</span></div>
+      ${open?`<div class="rftie-detwrap">${detRows}</div>`:''}
+    </div>`;
+  }).join('');
+  return `<section class="block"><div class="card pad rftie">
+    <div class="rftie-head"><span class="rf-chip">roll-forward tie</span><b>Ties to the PP&amp;E roll-forwards</b>
+      <span class="rftie-actions"><span class="rf-jump" onclick="rftieAll('${tabKey}',${lines.length},true)">⊕ expand all</span><span class="rf-jump" onclick="rftieAll('${tabKey}',${lines.length},false)">⊖ collapse</span><span class="rf-jump" onclick="go('recon')">↳ #${TAB_NUM.recon}</span></span></div>
+    ${blocks}
+    <div class="rftie-row rftie-total"><span class="rftie-lab">Net impact from this tab</span><span class="rf-tied mono">${money(net)}</span></div>
+    <p class="muted" style="font-size:12px;margin-top:8px">Click a line to reveal the postings that sum to it. Teal figures flow into the gross-cost / CIP roll-forwards; pink figures into the accumulated-depreciation roll-forward — both reconcile on #${TAB_NUM.recon}.</p>
+  </div></section>`;
+}
+
+/* ---- shared UI helpers ---------------------------------------------------- */
+function tile(lbl,big,sub,ic,badge,rf){
+  return `<div class="tile"><div class="top"><span class="lbl">${esc(lbl)}${rf?` <span class="rf-chip ${rf==='acc'?'acc':''}">roll-fwd</span>`:''}</span><span class="ic">${ic}</span></div>
+    <div class="big mono${rf?(rf==='acc'?' acc-tied':' rf-tied'):''}">${big}</div><div><span class="badge ${badge}">${esc(sub)}</span></div></div>`;
+}
+function openField(label,key,val){
+  return `<div class="field"><label>${label}</label><input type="number" value="${val}" onchange="setNum('${key}',this.value)"></div>`;
+}
+function clsTag(k){ const a=ACC[k]; return a?`<span class="gl-tag">${a.code} ${esc(a.name)}</span>`:esc(k); }
+
+/* ---- RECONCILIATION tab (dual roll-forward + tie-out) --------------------- */
+let rfOpen={};
+function toggleRF(type){ rfOpen[type]=!rfOpen[type]; render(); }
+function rfSetAll(open){ ['addition','cip_capit','disp_cost','cip_spend','depreciation','impairment','disp_accum'].forEach(t=>{ if(open) rfOpen[t]=true; else delete rfOpen[t]; }); render(); }
+function rfRow(line,c){
+  // line: {sign,label,amount,type,tab,book} ; expandable to postings
+  const cls=line.sign>0?'add':'sub', sign=line.sign>0?'+':'−';
+  const tieCls=line.book==='accum'?'acc-tied':'rf-tied';
+  const txns=state.txns.filter(t=>t.type===line.type).sort((a,b)=>a.date<b.date?-1:1);
+  const open=!!rfOpen[line.type+'@'+line.book];
+  const head=`<div class="rfrow ${cls} expandable ${open?'open':''}" onclick="toggleRF('${line.type+'@'+line.book}')">
+    <div class="lab"><span class="chev">▸</span><span class="sgn">${sign}</span><span>${esc(line.label)}</span>
+      <span class="rf-count">${txns.length}</span>
+      <span class="rf-jump" title="Ties out on #${TAB_NUM[line.tab]} ${TAB_LABEL[line.tab]}" onclick="event.stopPropagation();go('${line.tab}')">↳ #${TAB_NUM[line.tab]}</span></div>
+    <div class="val ${tieCls}">${money(line.amount)}</div></div>`;
+  if(!open) return head;
+  const body=txns.length?`<div class="rf-detail"><table class="tbl rf-tbl"><thead><tr><th>Date</th><th>Ref</th><th>Memo</th><th>Class</th><th class="num">Amount</th></tr></thead>
+    <tbody>${txns.map(t=>`<tr><td class="mono">${esc(t.date)}</td><td class="mono">${esc(t.ref)}</td><td>${esc(t.memo)}</td><td><span class="gl-tag">${ACC[t.acct]?ACC[t.acct].code:''}</span></td><td class="num mono">${money(t.amount)}</td></tr>`).join('')}</tbody>
+    <tfoot><tr><td colspan="4">${esc(line.label)} — ${txns.length} posting${txns.length===1?'':'s'}</td><td class="num mono">${money(line.amount)}</td></tr></tfoot></table></div>`
+    :`<div class="rf-detail"><div class="empty" style="margin:0">No postings of this type for the period.</div></div>`;
+  return head+body;
+}
+function tabRecon(){
+  const c=compute();
+  const reconciled=Math.abs(c.varNetSub)<1;
+  const mv=rfMovements(c);
+  const costLines=mv.filter(l=>l.book==='cost');
+  const cipLines=mv.filter(l=>l.book==='cip');
+  const accLines=mv.filter(l=>l.book==='accum');
+  const tiles=[
+    ['Gross cost (in service)',moneyK(c.endCost),'1500–1560 control','🏗️','b-indigo','rf'],
+    ['Construction in progress',moneyK(c.endCIP),'1590 · not depreciating','🚧','b-blue','rf'],
+    ['Accumulated depreciation',moneyK(c.endAccum),'1600 control','📉','b-violet','acc'],
+    ['Net book value (GL)',moneyK(c.netGL),'cost + CIP − A/D','📒','b-green'],
+    ['Subledger NBV',moneyK(c.subNet),'FA register control','🗂️','b-blue'],
+    ['Net ↔ subledger',money(c.varNetSub),reconciled?'in balance':'unreconciled','⚖️',reconciled?'b-green':'b-amber']
+  ];
+  return `
+  <section class="block"><div class="grid g6">${tiles.map(t=>tile(...t)).join('')}</div></section>
+
+  <section class="block grid g2" style="align-items:start">
+    <div class="card pad">
+      <div class="section-head" style="justify-content:space-between">
+        <div><span class="eyebrow">Full cycle · gross cost</span><h2>PP&amp;E cost roll-forward</h2></div>
+        <div class="btn-row"><button class="btn-ghost btn-xs" onclick="rfSetAll(true)">⊕ Expand</button><button class="btn-ghost btn-xs" onclick="rfSetAll(false)">⊖ Collapse</button></div>
+      </div>
+      <div class="rf-legend"><span class="sw"></span> Teal figures flow into — and tie back to — the gross-cost &amp; CIP roll-forwards.</div>
+      <div class="rf">
+        <div class="rfrow begin"><div class="lab"><span class="sgn"></span><span>Beginning gross cost</span> <span class="gl-tag">1500–1560</span></div><div class="val rf-tied">${money(c.openCost)}</div></div>
+        ${costLines.map(l=>rfRow(l,c)).join('')}
+        <div class="rfrow memo"><div class="lab"><span class="sgn">=</span><span>Reclasses between classes — net $0</span> <span class="rf-jump" onclick="go('transfers')">↳ #${TAB_NUM.transfers}</span></div><div class="val">${money(0)} <span class="muted" style="font-weight:500">(${money(c.reclass)} gross)</span></div></div>
+        <div class="rfrow end"><div class="lab"><span class="sgn">=</span><span>Ending gross cost</span> <span class="gl-tag">1500–1560</span></div><div class="val rf-tied">${money(c.endCost)}</div></div>
+      </div>
+      <div class="section-head" style="margin-top:18px"><span class="eyebrow">1590</span><h2 style="font-size:19px">Construction-in-progress roll-forward</h2></div>
+      <div class="rf">
+        <div class="rfrow begin"><div class="lab"><span class="sgn"></span><span>Beginning CIP</span> <span class="gl-tag">1590</span></div><div class="val rf-tied">${money(c.openCIP)}</div></div>
+        ${cipLines.map(l=>rfRow(l,c)).join('')}
+        <div class="rfrow end"><div class="lab"><span class="sgn">=</span><span>Ending CIP</span> <span class="gl-tag">1590</span></div><div class="val rf-tied">${money(c.endCIP)}</div></div>
+      </div>
+    </div>
+
+    <div class="card pad">
+      <div class="section-head"><span class="eyebrow">Full cycle · accumulated depreciation</span><h2>A/D roll-forward</h2></div>
+      <div class="rf-legend acc"><span class="sw"></span> Pink figures flow into the accumulated-depreciation roll-forward (contra-asset).</div>
+      <div class="rf acc">
+        <div class="rfrow begin"><div class="lab"><span class="sgn"></span><span>Beginning accumulated dep.</span> <span class="gl-tag">1600</span></div><div class="val acc-tied">${money(c.openAccum)}</div></div>
+        ${accLines.map(l=>rfRow(l,c)).join('')}
+        <div class="rfrow end"><div class="lab"><span class="sgn">=</span><span>Ending accumulated dep.</span> <span class="gl-tag">1600</span></div><div class="val acc-tied">${money(c.endAccum)}</div></div>
+      </div>
+
+      <div class="section-head" style="margin-top:18px"><span class="eyebrow">Tie-out</span><h2 style="font-size:19px">Subledger → GL → existence</h2></div>
+      <div class="kvs">
+        <div class="k">Net book value per GL</div><div class="v">${money(c.netGL)}</div>
+        <div class="k">FA subledger NBV (register)</div>
+        <div class="v"><input class="inline-edit" type="number" value="${c.subNet}" disabled title="Derived: subCost + subCIP − subAccum"></div>
+        <div class="k">Variance — GL vs subledger</div><div class="v" style="color:${Math.abs(c.varNetSub)<1?'var(--green)':'var(--amber)'}">${money(c.varNetSub)}</div>
+        <div class="k">Physically verified NBV</div>
+        <div class="v"><input class="inline-edit" type="number" value="${c.physNet}" onchange="setNum('physNet',this.value)"></div>
+        <div class="k">Variance — subledger vs existence</div><div class="v" style="color:${Math.abs(c.varSubPhys)<1?'var(--green)':'var(--amber)'}">${money(c.varSubPhys)}</div>
+        <div class="sec">Subledger control components</div>
+        <div class="k">Cost (1500–1560)</div><div class="v" style="color:${Math.abs(c.varCost)<1?'var(--green)':'var(--amber)'}">${money(c.subCost)}</div>
+        <div class="k">CIP (1590)</div><div class="v" style="color:${Math.abs(c.varCIP)<1?'var(--green)':'var(--amber)'}">${money(c.subCIP)}</div>
+        <div class="k">Accum. dep. (1600)</div><div class="v" style="color:${Math.abs(c.varAccum)<1?'var(--green)':'var(--amber)'}">${money(c.subAccum)}</div>
+      </div>
+      <div class="snap"><span class="dot" style="background:${reconciled?'var(--green)':'var(--amber)'}"></span>
+        <span><b>${reconciled?'Subledger control ties to the GL net book value.':'GL-to-subledger variance of '+money(c.varNetSub)+' to investigate.'}</b>
+        ${Math.abs(c.varSubPhys)>=1?' Physical verification is off the subledger by '+money(c.varSubPhys)+' — see #'+TAB_NUM.verify+' Physical Verification.':''}</span></div>
+      <div class="section-head" style="margin-top:18px"><span class="eyebrow">Opening balances</span></div>
+      <div class="form-grid">
+        ${openField('Gross cost (1500–1560)','openGrossCost',state.openGrossCost)}
+        ${openField('CIP (1590)','openCIP',state.openCIP)}
+        ${openField('Accum. dep. (1600)','openAccum',state.openAccum)}
+      </div>
+    </div>
+  </section>
+  <div class="disclaimer tight">⚠️ Reconciliation support only. Both roll-forwards are computed from the postings and opening balances you enter; confirm against your fixed-asset system and GL before close.</div>`;
+}
+
+/* ---- GL TRANSACTIONS tab -------------------------------------------------- */
+function glAccts(t){
+  const def=TXN_TYPES[t.type]||{dr:'',cr:''};
+  const dr=def.dr==='@class'?t.acct:def.dr;
+  const cr=def.cr==='@class'?t.acct:(def.cr==='@class2'?t.acct2:def.cr);
+  return {dr,cr};
+}
+function tabGL(){
+  const rows=state.txns.slice().sort((a,b)=>a.date<b.date?-1:1).map(t=>{
+    const def=TXN_TYPES[t.type]||{label:t.type};
+    const {dr,cr}=glAccts(t);
+    const req=approvalFor(t.amount);
+    const sb=t.apprStatus==='Pending'?'b-amber':t.apprStatus==='Approved'?'b-green':'b-gray';
+    return `<tr>
+      <td class="mono">${esc(t.date)}</td><td class="mono">${esc(t.ref)}</td>
+      <td>${esc(def.label)}</td><td>${esc(t.memo)}</td>
+      <td><span class="gl-tag">Dr ${ACC[dr]?ACC[dr].code:'?'}</span> <span class="gl-tag">Cr ${ACC[cr]?ACC[cr].code:'?'}</span></td>
+      <td class="num mono">${money(t.amount)}</td>
+      <td><span class="badge ${sb}" title="Requires ${esc(req.role)}">${esc(t.apprStatus||'Posted')}</span> <span class="muted" style="font-size:11px">T${req.tier}</span></td>
+      <td><button class="btn-danger btn-xs" onclick="delTxn('${t.id}')">✕</button></td></tr>`;
+  }).join('');
+  const coaRows=Object.entries(ACC).map(([k,a])=>`<tr>
+    <td class="mono">${a.code}</td><td>${esc(a.name)}</td><td class="mono">${a.normal}</td>
+    <td>${RF_ACCTS.includes(k)?'<span class="rf-chip">roll-fwd</span>':'<span class="muted">—</span>'}</td>
+    <td>${tabNums(ACC_TABS[k])||'<span class="muted">—</span>'}</td></tr>`).join('');
+  const total=state.txns.reduce((s,t)=>s+(+t.amount||0),0);
+  const opts=Object.entries(TXN_TYPES).filter(([k])=>!['reclass','rou_add','rou_amort'].includes(k)).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('');
+  const clsOpts=COST_ACCTS.map(k=>`<option value="${k}">${ACC[k].code} ${esc(ACC[k].name)}</option>`).join('');
+  return `
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">Journal register</span><h2>Fixed-asset double-entry postings</h2></div>
+    <div class="tbl-wrap"><table class="tbl" style="min-width:920px">
+      <thead><tr><th>Date</th><th>Ref</th><th>Type</th><th>Memo</th><th>Accounts</th><th class="num">Amount</th><th>Approval</th><th></th></tr></thead>
+      <tbody>${rows||'<tr><td colspan="8" class="muted" style="text-align:center">No transactions.</td></tr>'}</tbody>
+      <tfoot><tr><td colspan="5">Posted activity (${state.txns.length} entries)</td><td class="num mono">${money(total)}</td><td colspan="2"></td></tr></tfoot>
+    </table></div>
+  </section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">Chart of accounts</span><h2>GL account list — tied out by tab #</h2></div>
+    <div class="tbl-wrap"><table class="tbl" style="min-width:640px">
+      <thead><tr><th>Account</th><th>Name</th><th>Normal</th><th>In roll-forward</th><th>Tied out by</th></tr></thead>
+      <tbody>${coaRows}</tbody></table></div>
+    <p class="muted" style="font-size:12.5px;margin-top:8px">Every account is tied out by a numbered tab — click a chip to jump there. Accounts marked <span class="rf-chip">roll-fwd</span> appear on the cost / CIP / A&amp;D roll-forwards.</p>
+  </section>
+  <section class="block card pad">
+    <div class="section-head"><span class="eyebrow">Add posting</span><h2>New transaction</h2></div>
+    <div class="form-grid">
+      <div class="field"><label>Date</label><input id="nt_date" type="date" value="2026-05-31"></div>
+      <div class="field"><label>Reference</label><input id="nt_ref" placeholder="CAP-/CIP-/DSP-"></div>
+      <div class="field" style="grid-column:span 2"><label>Type</label><select id="nt_type">${opts}</select></div>
+      <div class="field"><label>Asset class</label><select id="nt_acct">${clsOpts}</select></div>
+      <div class="field"><label>Amount</label><input id="nt_amt" type="number" placeholder="0"></div>
+      <div class="field" style="grid-column:1/-1"><label>Memo</label><input id="nt_memo" placeholder="Asset / project description"></div>
+    </div>
+    <button class="btn-primary" onclick="addTxn()">+ Post transaction</button>
+    <p class="muted" style="font-size:12px;margin-top:8px">Posting type sets the debit/credit accounts and which roll-forward the entry flows through. Entries route to the <b>Approvals</b> tab (#${TAB_NUM.approvals}) per the $500M-company authority / AFE matrix and start <b>Pending</b>.</p>
+  </section>`;
+}
+
+/* ---- APPROVALS tab (delegation of authority / AFE) ------------------------ */
+function tabApprovals(){
+  const manual=state.txns.filter(t=>t.src==='manual');
+  const pending=manual.filter(t=>t.apprStatus==='Pending');
+  const pendDisp=state.disposals.filter(d=>!d.approved);
+  const pendVal=pending.reduce((s,t)=>s+Math.abs(+t.amount||0),0)+pendDisp.reduce((s,d)=>s+(+d.cost||0),0);
+  const highest=Math.max(0,...pending.map(t=>approvalFor(t.amount).tier),...pendDisp.map(d=>approvalFor(d.cost).tier));
+  const reg=state.txns.slice().sort((a,b)=>(a.apprStatus==='Pending'?-1:1)-(b.apprStatus==='Pending'?-1:1)).map(t=>{
+    const req=approvalFor(t.amount);
+    const sb=t.apprStatus==='Pending'?'b-amber':t.apprStatus==='Approved'?'b-green':'b-gray';
+    const act=t.apprStatus==='Pending'?`<button class="btn-soft btn-xs" onclick="approveTxn('${t.id}')">Approve</button>`:(t.apprBy?esc(t.apprBy):'');
+    return `<tr><td class="mono">${esc(t.date)}</td><td class="mono">${esc(t.ref)}</td>
+      <td>${esc((TXN_TYPES[t.type]||{label:t.type}).label)}</td><td class="num mono">${money(t.amount)}</td>
+      <td><span class="pill">T${req.tier}</span> ${esc(req.role)}${req.dual?' <span class="badge b-red">dual</span>':''}</td>
+      <td><span class="badge ${sb}">${esc(t.apprStatus)}</span></td><td>${act}</td></tr>`;
+  }).join('');
+  const matrix=APPROVAL.map(t=>`<tr${highest===t.tier?' class="tot"':''}>
+    <td class="mono">T${t.tier}</td><td class="mono">${apprBand(t)}</td><td><b>${esc(t.role)}</b></td>
+    <td>${t.dual?'<span class="badge b-red">Dual approval</span>':'<span class="badge b-gray">Single</span>'}</td>
+    <td class="muted">Preparer ≠ approver (segregation of duties)</td></tr>`).join('');
+  const dispRows=state.disposals.map(d=>{
+    const req=approvalFor(d.cost);
+    return `<tr><td class="mono">${esc(d.ref)}</td><td>${esc(d.name)}</td><td class="num mono">${money(d.cost)}</td>
+      <td><span class="pill">T${req.tier}</span> ${esc(req.role)}</td>
+      <td><span class="badge ${d.approved?'b-green':'b-amber'}">${d.approved?'Authorized':'Pending'}</span></td>
+      <td>${d.approved?'':`<button class="btn-soft btn-xs" onclick="approveDisp('${d.id}')">Authorize</button>`}</td></tr>`;
+  }).join('');
+  return `
+  <section class="block"><div class="grid g6">
+    ${tile('Pending approvals',num(pending.length+pendDisp.length),'capex/JE + disposals','⏳',(pending.length+pendDisp.length)?'b-amber':'b-green')}
+    ${tile('Pending value',moneyK(pendVal),'awaiting authorization','💲',pendVal?'b-amber':'b-green')}
+    ${tile('Highest tier pending',highest?'T'+highest:'—',highest?esc(APPROVAL[highest-1].role):'none','🧗',highest>=4?'b-red':highest?'b-amber':'b-green')}
+    ${tile('Dashboard entries',num(manual.length),'made in this tool','✍️','b-blue')}
+    ${tile('Imported postings',num(state.txns.length-manual.length),'prior-period / ERP feed','📥','b-gray')}
+    ${tile('Authority tiers',num(APPROVAL.length),'$500M capital / AFE','🏛️','b-indigo')}
+  </div></section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">Delegation of authority · AFE</span><h2>Capital approval matrix — who approves what</h2></div>
+    <div class="tbl-wrap"><table class="tbl" style="min-width:720px">
+      <thead><tr><th>Tier</th><th>Capex / entry threshold</th><th>Required approver</th><th>Approval</th><th>Control</th></tr></thead>
+      <tbody>${matrix}</tbody></table></div>
+    <div class="snap"><span class="dot" style="background:var(--indigo)"></span><span><b>Calibrated for a ~$500M-revenue company.</b> Capex (AFE) and journal entries route to the approver whose threshold they fall in; items above $500K require <b>dual approval</b> (CFO; Board for &gt;$2.5M), and all require preparer ≠ approver. Disposals additionally require disposal-authorization sign-off.</span></div>
+  </section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">Disposal authorization</span><h2>Retirement / write-off sign-off</h2></div>
+    <div class="tbl-wrap"><table class="tbl" style="min-width:680px">
+      <thead><tr><th>Ref</th><th>Asset</th><th class="num">Cost</th><th>Required approver</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>${dispRows}</tbody></table></div>
+  </section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">Workflow</span><h2>Entry approval register</h2></div>
+    <div class="tbl-wrap"><table class="tbl" style="min-width:860px">
+      <thead><tr><th>Date</th><th>Ref</th><th>Type</th><th class="num">Amount</th><th>Required approver</th><th>Status</th><th>Approver / action</th></tr></thead>
+      <tbody>${reg}</tbody></table></div>
+    <p class="muted" style="font-size:12.5px;margin-top:8px">Imported (prior-period / ERP) postings show as <b>Posted</b>. New entries you add in GL Transactions start <b>Pending</b> and must be approved here per the matrix above.</p>
+  </section>
+  <div class="disclaimer tight">⚠️ Approval routing is a control workflow; it does not post or authorize entries in your ERP. Configure thresholds and approver roles to match your company's capital-authorization (AFE) and delegation-of-authority policy.</div>`;
+}
+
+/* ---- REVIEW & EXPORT tab -------------------------------------------------- */
+function tabReview(){
+  const c=compute();
+  const so=state.signoff;
+  const roleCard=(role,key)=>{
+    const v=so[key];
+    return `<div class="so ${v?'signed':''}"><div class="role">${role}</div>
+      ${v?`<div class="who">${esc(v.name)}</div><div class="when">signed ${esc(v.when)}</div>`
+         :`<div class="row-flex" style="margin-top:6px"><input id="so_${key}" class="inline-edit" style="width:auto;flex:1;text-align:left" placeholder="Name"><button class="btn-soft btn-xs" onclick="sign('${key}')">Sign</button></div>`}</div>`;
+  };
+  const segDut=(()=>{
+    const p=so.preparer&&so.reviewer&&so.preparer.name.trim().toLowerCase()===so.reviewer.name.trim().toLowerCase();
+    return p?`<div class="snap"><span class="dot" style="background:var(--red)"></span><span><b>Segregation of duties flag.</b> Preparer and reviewer are the same person.</span></div>`:'';
+  })();
+  const exRows=state.exceptions.map(e=>`<div class="logrow"><span class="when mono">${esc(e.when)}</span><span class="badge ${e.sev==='Open'?'b-amber':'b-green'}" style="flex:none">${esc(e.sev)}</span><span style="flex:1">${esc(e.text)}</span><button class="btn-danger btn-xs" onclick="delExc('${e.id}')">✕</button></div>`).join('')||'<div class="empty">No exceptions logged.</div>';
+  return `
+  <section class="block grid g2" style="align-items:start">
+    <div class="card pad">
+      <div class="section-head"><span class="eyebrow">Exceptions</span><h2>Variance &amp; issue log</h2></div>
+      ${exRows}
+      <div class="row-flex" style="margin-top:12px">
+        <input id="ex_text" class="inline-edit" style="width:auto;flex:1;text-align:left" placeholder="Describe a variance or issue…">
+        <button class="btn-primary btn-xs" onclick="addExc()">+ Log</button></div>
+    </div>
+    <div class="card pad">
+      <div class="section-head"><span class="eyebrow">Approvals</span><h2>Sign-off &amp; period lock</h2></div>
+      <div class="signoff">${roleCard('Preparer','preparer')}${roleCard('Reviewer','reviewer')}${roleCard('Approver (Controller)','approver')}</div>
+      ${segDut}
+      <div class="lock-note">Locking marks the reconciliation as final for ${esc(state.period)} (reversible in this preview).</div>
+      <div class="row-flex" style="margin-top:10px">
+        <button class="${state.locked?'btn-ghost':'btn-primary'}" onclick="toggleLock()">${state.locked?'🔓 Unlock period':'🔒 Lock period'}</button>
+        <span class="badge ${Math.abs(c.varNetSub)<1?'b-green':'b-amber'}">${Math.abs(c.varNetSub)<1?'Subledger ties to GL':'Variance '+money(c.varNetSub)}</span>
+      </div>
+    </div>
+  </section>
+  <section class="block card pad">
+    <div class="section-head"><span class="eyebrow">Export</span><h2>Download the reconciliation</h2></div>
+    <div class="grid g2">
+      <div class="exp"><div class="ic">📄</div><div class="meta"><div class="t">Reconciliation pack (CSV)</div><div class="d">Both roll-forwards, tie-out, CIP, leases, book-vs-tax</div></div><button class="btn-soft btn-xs" onclick="exportCSV()">Download</button></div>
+      <div class="exp"><div class="ic">📝</div><div class="meta"><div class="t">Close memo (Markdown)</div><div class="d">Narrative summary for the file</div></div><button class="btn-soft btn-xs" onclick="exportMD()">Download</button></div>
+    </div>
+  </section>`;
+}
+
+/* ---- actions -------------------------------------------------------------- */
+function setNum(key,val){state[key]=parseFloat(val)||0;render();}
+function addTxn(){
+  const t=$('nt_type').value, amt=parseFloat($('nt_amt').value)||0;
+  if(!amt){alert('Enter an amount.');return;}
+  const acct=$('nt_acct').value;
+  const req=approvalFor(amt);
+  state.txns.push({id:id(),date:$('nt_date').value||'2026-05-31',ref:$('nt_ref').value||'—',type:t,acct,memo:$('nt_memo').value||TXN_TYPES[t].label,amount:amt,src:'manual',apprStatus:'Pending',apprBy:null});
+  alert(`Posted. Per the authority matrix this ${money(amt)} entry requires ${req.role}${req.dual?' (dual approval)':''} — see the Approvals tab.`);
+  render();
+}
+function approveTxn(i){
+  const t=state.txns.find(x=>x.id===i); if(!t) return;
+  const req=approvalFor(t.amount);
+  const who=prompt(`Approve ${money(t.amount)} ${esc(t.ref)} as ${req.role}${req.dual?' (dual approval required)':''}.\nEnter approver name:`);
+  if(who&&who.trim()){ t.apprStatus='Approved'; t.apprBy=who.trim(); render(); }
+}
+function approveDisp(i){
+  const d=state.disposals.find(x=>x.id===i); if(!d) return;
+  const who=prompt(`Authorize disposal ${esc(d.ref)} — ${esc(d.name)} (cost ${money(d.cost)}).\nEnter approver name:`);
+  if(who&&who.trim()){ d.approved=true; render(); }
+}
+function delTxn(i){state.txns=state.txns.filter(t=>t.id!==i);render();}
+function addExc(){const t=$('ex_text').value.trim();if(!t)return;state.exceptions.unshift({id:id(),when:'2026-05-31',sev:'Open',text:t});render();}
+function delExc(i){state.exceptions=state.exceptions.filter(e=>e.id!==i);render();}
+function sign(key){const v=($('so_'+key).value||'').trim();if(!v){alert('Enter a name.');return;}state.signoff[key]={name:v,when:'2026-05-31'};render();}
+function toggleLock(){state.locked=!state.locked;render();}
+
+function download(name,text,mime){
+  const b=new Blob([text],{type:mime}); const u=URL.createObjectURL(b);
+  const a=document.createElement('a');a.href=u;a.download=name;a.click();URL.revokeObjectURL(u);
+}
+function exportCSV(){
+  const c=compute(), an=faAnalytics();
+  const L=[];
+  L.push('Fixed Assets Reconciliation,'+state.company+','+state.period);
+  L.push('');L.push('GROSS COST ROLL-FORWARD,Amount');
+  L.push('Beginning gross cost,'+c.openCost);
+  L.push('Additions,'+c.additions);L.push('Transfers from CIP,'+c.cipCapit);L.push('Disposals (cost),'+(-c.dispCost));
+  L.push('Ending gross cost,'+c.endCost);
+  L.push('');L.push('CIP ROLL-FORWARD,Amount');
+  L.push('Beginning CIP,'+c.openCIP);L.push('CIP expenditures,'+c.cipSpend);L.push('Transferred to in-service,'+(-c.cipCapit));L.push('Ending CIP,'+c.endCIP);
+  L.push('');L.push('ACCUMULATED DEPRECIATION ROLL-FORWARD,Amount');
+  L.push('Beginning accumulated depreciation,'+c.openAccum);L.push('Depreciation expense,'+c.deprec);L.push('Impairment,'+c.impair);L.push('A/D removed on disposals,'+(-c.dispAccum));L.push('Ending accumulated depreciation,'+c.endAccum);
+  L.push('');L.push('TIE-OUT,Amount');
+  L.push('Net book value per GL,'+c.netGL);L.push('Subledger NBV,'+c.subNet);L.push('Variance GL vs subledger,'+c.varNetSub);
+  L.push('Physically verified NBV,'+c.physNet);L.push('Variance subledger vs existence,'+c.varSubPhys);
+  L.push('');L.push('DISPOSALS,Amount');
+  L.push('Proceeds,'+c.proceeds);L.push('Gain on disposal,'+c.gain);L.push('Loss on disposal,'+c.loss);
+  L.push('');L.push('LEASES (ASC 842),Amount');
+  L.push('ROU additions,'+c.rouAdd);L.push('ROU amortization,'+c.rouAmort);
+  L.push('');L.push('CAPEX ANALYTICS,Value');
+  L.push('YTD capex,'+an.ytdCapex);L.push('YTD depreciation,'+an.ytdDep);L.push('YTD disposals (cost),'+an.ytdDisp);
+  L.push('Capex MoM %,'+an.capexMoM.toFixed(1));L.push('Capex YoY %,'+an.capexYoY.toFixed(1));
+  const cr=consolRoll();
+  L.push('');L.push('CONSOLIDATION (USD),Amount');
+  L.push('Consolidated gross cost,'+Math.round(cr.conCost));L.push('Consolidated accumulated depreciation,'+Math.round(cr.conAccum));
+  L.push('Consolidated CIP,'+Math.round(cr.conCip));L.push('Consolidated NBV,'+Math.round(cr.conNbv));
+  L.push('Eliminations (cost),'+Math.round(cr.elimCost));L.push('CTA (equity),'+Math.round(cr.cta));
+  const aroEnd=state.aro.reduce((s,x)=>s+(+x.liabOpen||0)+(+x.accretion||0)+(+x.addition||0)-(+x.settle||0),0);
+  const hfsWd=state.hfs.reduce((s,x)=>s+Math.max(0,(+x.carrying||0)-(+x.fairLessCost||0)),0);
+  const intNbv=state.intangibles.reduce((s,x)=>s+(+x.cost||0)-(+x.accum||0),0);
+  L.push('');L.push('OTHER LONG-LIVED,Amount');
+  L.push('ARO liability (ending),'+Math.round(aroEnd));L.push('Held-for-sale write-down,'+Math.round(hfsWd));
+  L.push('Intangibles NBV,'+Math.round(intNbv));
+  download('fixed-assets-reconciliation.csv',L.join('\n'),'text/csv');
+}
+function exportMD(){
+  const c=compute(), an=faAnalytics();
+  const m=`# Fixed Assets Reconciliation — ${state.company}
+**Period:** ${state.period}  ·  **Status:** ${Math.abs(c.varNetSub)<1?'Subledger ties to GL':'Variance to clear'}
+
+## Gross cost roll-forward
+- Beginning gross cost: ${money(c.openCost)}
+- + Additions ${money(c.additions)} · + Transfers from CIP ${money(c.cipCapit)} · − Disposals ${money(c.dispCost)}
+- **Ending gross cost: ${money(c.endCost)}**
+
+## CIP roll-forward
+- Beginning CIP ${money(c.openCIP)} + Spend ${money(c.cipSpend)} − Capitalized ${money(c.cipCapit)} = **${money(c.endCIP)}**
+
+## Accumulated depreciation roll-forward
+- Beginning A/D ${money(c.openAccum)} + Depreciation ${money(c.deprec)} + Impairment ${money(c.impair)} − A/D on disposals ${money(c.dispAccum)} = **${money(c.endAccum)}**
+
+## Net book value tie-out
+- Net book value per GL: **${money(c.netGL)}**
+- FA subledger NBV: ${money(c.subNet)} (variance ${money(c.varNetSub)})
+- Physically verified NBV: ${money(c.physNet)} (variance ${money(c.varSubPhys)})
+
+## Disposals
+- Proceeds ${money(c.proceeds)} · Gain ${money(c.gain)} · Loss ${money(c.loss)}
+
+## Leases (ASC 842)
+- ROU additions ${money(c.rouAdd)} · ROU amortization ${money(c.rouAmort)}
+
+## Capex analytics
+- YTD capex ${money(an.ytdCapex)} · YTD depreciation ${money(an.ytdDep)} · YTD disposals ${money(an.ytdDisp)}
+- Capex MoM ${pct(an.capexMoM)} · YoY ${pct(an.capexYoY)}
+
+## Consolidation (USD)
+- Consolidated NBV: **${money(consolRoll().conNbv)}** (cost ${money(consolRoll().conCost)} + CIP ${money(consolRoll().conCip)} − A/D ${money(consolRoll().conAccum)}); CTA ${money(consolRoll().cta)}
+
+## Other long-lived assets
+- ARO liability (ending): ${money(state.aro.reduce((s,x)=>s+(+x.liabOpen||0)+(+x.accretion||0)+(+x.addition||0)-(+x.settle||0),0))}
+- Held-for-sale write-down: ${money(state.hfs.reduce((s,x)=>s+Math.max(0,(+x.carrying||0)-(+x.fairLessCost||0)),0))}
+- Intangibles NBV: ${money(state.intangibles.reduce((s,x)=>s+(+x.cost||0)-(+x.accum||0),0))}
+
+## Open exceptions
+${state.exceptions.filter(e=>e.sev==='Open').map(e=>'- '+e.text).join('\n')||'- None'}
+
+_Workflow & analysis only — not accounting, tax, or audit advice._`;
+  download('fixed-assets-reconciliation-memo.md',m,'text/markdown');
+}
+
+/* ---- ADDITIONS / CAPEX tab ------------------------------------------------ */
+function tabAdditions(){
+  const c=compute();
+  const adds=state.txns.filter(t=>t.type==='addition').sort((a,b)=>a.date<b.date?-1:1);
+  const fromCip=state.txns.filter(t=>t.type==='cip_capit');
+  const byCls=COST_ACCTS.map(k=>({k,add:c.byClass[k].add,capit:c.byClass[k].capit})).filter(x=>x.add||x.capit);
+  const totAdd=c.additions, totCap=c.cipCapit, totCapex=totAdd+totCap;
+  const maxc=Math.max(1,...byCls.map(x=>x.add+x.capit));
+  const rows=adds.map(t=>{
+    const below=(+t.amount||0)<(+state.capThreshold||0);
+    return `<tr><td class="mono">${esc(t.date)}</td><td class="mono">${esc(t.ref)}</td><td>${esc(t.memo)}</td>
+      <td>${clsTag(t.acct)}</td><td class="num mono rf-tied">${money(t.amount)}</td>
+      <td>${below?'<span class="badge b-amber">below threshold?</span>':'<span class="badge b-green">capitalize</span>'}</td></tr>`;
+  }).join('')||'<tr><td colspan="6" class="muted" style="text-align:center">No additions this period.</td></tr>';
+  const cipRows=fromCip.map(t=>`<tr><td class="mono">${esc(t.date)}</td><td class="mono">${esc(t.ref)}</td><td>${esc(t.memo)}</td><td>${clsTag(t.acct)}</td><td class="num mono rf-tied">${money(t.amount)}</td></tr>`).join('')||'<tr><td colspan="5" class="muted" style="text-align:center">None capitalized from CIP this period.</td></tr>';
+  return `
+  ${rfTiePanel('additions')}
+  <section class="block"><div class="grid g5">
+    ${tile('Total capex (period)',moneyK(totCapex),'additions + CIP capitalized','🏗️','b-indigo')}
+    ${tile('Direct additions',moneyK(totAdd),num(adds.length)+' purchases','🧾','b-green','rf')}
+    ${tile('Capitalized from CIP',moneyK(totCap),'placed in service','🚧','b-blue','rf')}
+    ${tile('Largest addition',moneyK(Math.max(0,...adds.map(t=>+t.amount||0))),'single asset','⭐','b-violet')}
+    ${tile('Cap. threshold',money(state.capThreshold),'min capitalize / unit','📏','b-gray')}
+  </div></section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">By asset class</span><h2>Capex composition</h2></div>
+    <div class="card pad"><div class="fnl">
+      ${byCls.map(x=>`<div class="fnl-row"><div class="fnl-lab"><span class="sw" style="width:11px;height:11px;border-radius:3px;background:${CLASS_COLOR[x.k]};display:inline-block"></span>${esc(ACC[x.k].name)}</div>
+        <div class="fnl-bar"><i style="width:${(x.add+x.capit)/maxc*100}%;background:${CLASS_COLOR[x.k]}"></i></div>
+        <div class="fnl-val mono">${moneyK(x.add+x.capit)}</div></div>`).join('')}
+    </div></div>
+  </section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">Direct additions</span><h2>Capitalized purchases — ties to cost roll-forward</h2></div>
+    <div class="tbl-wrap"><table class="tbl" style="min-width:760px">
+      <thead><tr><th>Date</th><th>Ref</th><th>Description</th><th>Class</th><th class="num">Amount</th><th>Policy</th></tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr><td colspan="4">Direct additions (${adds.length})</td><td class="num mono rf-tied">${money(totAdd)}</td><td></td></tr></tfoot>
+    </table></div>
+  </section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">Placed in service</span><h2>Capitalized from CIP</h2></div>
+    <div class="tbl-wrap"><table class="tbl" style="min-width:680px">
+      <thead><tr><th>Date</th><th>Ref</th><th>Project</th><th>Class</th><th class="num">Amount</th></tr></thead>
+      <tbody>${cipRows}</tbody>
+      <tfoot><tr><td colspan="4">Capitalized from CIP (${fromCip.length})</td><td class="num mono rf-tied">${money(totCap)}</td></tr></tfoot>
+    </table></div>
+  </section>
+  <div class="disclaimer tight">⚠️ Additions feed the gross-cost roll-forward (#${TAB_NUM.recon}). Confirm each item meets the capitalization policy (≥ ${money(state.capThreshold)} and useful life ≥ ${state.capLifeMin} months) — see #${TAB_NUM.cappolicy}.</div>`;
+}
+
+/* ---- CIP / IN-PROGRESS tab ------------------------------------------------ */
+function tabCip(){
+  const c=compute();
+  const open=state.cip.filter(p=>!p.done);
+  const totSpent=open.reduce((s,p)=>s+(+p.spentToDate||0),0);
+  const totBudget=open.reduce((s,p)=>s+(+p.budget||0),0);
+  const rows=state.cip.map(p=>{
+    const overdue=daysUntil(p.expSvc+'-01')<0 && !p.done;
+    const pctBudget=p.budget?Math.round(p.spentToDate/p.budget*100):0;
+    return `<tr${p.done?' class="tot"':''}>
+      <td class="mono">${esc(p.proj)}</td><td>${esc(p.name)}<div class="muted" style="font-size:11px">${esc(p.mgr)}</div></td>
+      <td class="num mono">${moneyK(p.budget)}</td><td class="num mono">${moneyK(p.spentToDate)}</td>
+      <td class="num mono rf-tied">${moneyK(p.spentPeriod)}</td>
+      <td style="min-width:130px"><div class="bin-bar"><i style="width:${Math.min(100,p.pct)}%;background:${p.pct>=100?'var(--green)':p.pct>=70?'var(--amber)':'var(--indigo)'}"></i></div><div class="muted" style="font-size:11px;margin-top:3px">${p.pct}% · ${pctBudget}% of budget</div></td>
+      <td><span class="badge ${p.done?'b-green':overdue?'b-red':'b-blue'}">${p.done?'Capitalized':esc(p.expSvc)}</span></td></tr>`;
+  }).join('');
+  return `
+  ${rfTiePanel('cip')}
+  <section class="block"><div class="grid g5">
+    ${tile('Ending CIP',moneyK(c.endCIP),'1590 · not depreciating','🚧','b-indigo','rf')}
+    ${tile('Spend this period',moneyK(c.cipSpend),num(open.length)+' open projects','💸','b-green','rf')}
+    ${tile('Capitalized (placed in svc)',moneyK(c.cipCapit),'moved to in-service','✅','b-blue','rf')}
+    ${tile('Open commitment',moneyK(Math.max(0,totBudget-totSpent)),'budget remaining','📋','b-violet')}
+    ${tile('CIP / total PP&E',((c.endCost+c.endCIP)?(c.endCIP/(c.endCost+c.endCIP)*100):0).toFixed(1)+'%','share in construction','📊','b-gray')}
+  </div></section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">Projects</span><h2>Construction-in-progress register</h2></div>
+    <div class="tbl-wrap"><table class="tbl" style="min-width:900px">
+      <thead><tr><th>Project</th><th>Name</th><th class="num">Budget</th><th class="num">Spent to date</th><th class="num">This period</th><th>% complete</th><th>Expected in-service</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>
+  </section>
+  <div class="snap"><span class="dot" style="background:var(--amber)"></span><span><b>SOX control — CIP monitoring.</b> Track that no component already in use is sitting in CIP (depreciation should start at placed-in-service), watch ageing projects, and capitalize promptly. Period spend ties to the CIP roll-forward (#${TAB_NUM.recon}).</span></div>
+  <div class="disclaimer tight">⚠️ CIP balances are non-depreciating until placed in service. Capitalize and begin depreciation when the asset is ready for its intended use, per your capitalization policy.</div>`;
+}
+
+/* ---- CAPITALIZE vs EXPENSE tab -------------------------------------------- */
+const CAP_SAMPLES=[
+  {desc:'Cryo-EM detector upgrade (new capability)',amount:2400000,life:84,kind:'Betterment'},
+  {desc:'Replace HVAC compressor — like-for-like',amount:48000,life:0,kind:'Repair'},
+  {desc:'GPU compute cluster',amount:1250000,life:36,kind:'New asset'},
+  {desc:'Annual instrument calibration & PM',amount:62000,life:0,kind:'Maintenance'},
+  {desc:'Cleanroom HVAC recommissioning (extends life)',amount:1800000,life:300,kind:'Betterment'},
+  {desc:'Replace 12 lab chairs',amount:4200,life:60,kind:'Below threshold'},
+  {desc:'Software license — 1-yr SaaS',amount:180000,life:12,kind:'Period expense'},
+  {desc:'Building roof replacement',amount:920000,life:240,kind:'Betterment'}
+];
+function capDecision(s){
+  const below=s.amount<(+state.capThreshold||0);
+  const shortLife=s.life>0 && s.life<(+state.capLifeMin||0);
+  const repair=['Repair','Maintenance','Period expense'].includes(s.kind);
+  if(below) return {cap:false,reason:'Below capitalization threshold'};
+  if(repair||s.life===0) return {cap:false,reason:'Repairs & maintenance — expense as incurred'};
+  if(shortLife) return {cap:false,reason:'Useful life < policy minimum'};
+  return {cap:true,reason:'Capitalize — meets threshold & life, adds future benefit'};
+}
+function tabCappolicy(){
+  const rows=CAP_SAMPLES.map(s=>{
+    const d=capDecision(s);
+    return `<tr><td>${esc(s.desc)}</td><td class="num mono">${money(s.amount)}</td><td class="num mono">${s.life?s.life+' mo':'—'}</td>
+      <td><span class="pill">${esc(s.kind)}</span></td>
+      <td><span class="badge ${d.cap?'b-green':'b-amber'}">${d.cap?'Capitalize':'Expense'}</span></td>
+      <td class="muted">${esc(d.reason)}</td></tr>`;
+  }).join('');
+  const capCount=CAP_SAMPLES.filter(s=>capDecision(s).cap).length;
+  return `
+  <section class="block"><div class="grid g4">
+    ${tile('Capitalization threshold',money(state.capThreshold),'min cost per unit','📏','b-indigo')}
+    ${tile('Minimum useful life',state.capLifeMin+' months','to capitalize','📆','b-blue')}
+    ${tile('Sample → capitalize',capCount+' / '+CAP_SAMPLES.length,'meet the policy','✅','b-green')}
+    ${tile('Sample → expense',(CAP_SAMPLES.length-capCount)+' / '+CAP_SAMPLES.length,'R&M / below threshold','🧾','b-amber')}
+  </div></section>
+  <section class="block card pad">
+    <div class="section-head"><span class="eyebrow">Policy</span><h2>Capitalization policy parameters</h2></div>
+    <div class="form-grid">
+      <div class="field"><label>Capitalization threshold ($)</label><input type="number" value="${state.capThreshold}" onchange="setNum('capThreshold',this.value)"></div>
+      <div class="field"><label>Minimum useful life (months)</label><input type="number" value="${state.capLifeMin}" onchange="setNum('capLifeMin',this.value)"></div>
+    </div>
+    <p class="muted" style="font-size:12.5px">Capitalize when an expenditure (a) is ≥ the threshold, (b) has a useful life ≥ the minimum, and (c) provides future economic benefit (a new asset or a <b>betterment</b> that extends life / adds capacity). Routine <b>repairs &amp; maintenance</b> that merely keep an asset in working order are expensed as incurred.</p>
+  </section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">Decision test</span><h2>Capitalize vs expense — worked examples</h2></div>
+    <div class="tbl-wrap"><table class="tbl" style="min-width:820px">
+      <thead><tr><th>Expenditure</th><th class="num">Amount</th><th class="num">Useful life</th><th>Nature</th><th>Decision</th><th>Basis</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>
+  </section>
+  <div class="snap"><span class="dot" style="background:var(--indigo)"></span><span><b>SOX control — capitalization policy.</b> A consistent, documented capitalize-vs-expense test prevents both over-capitalization (inflated assets) and under-capitalization (expensing capital items). Repairs vs betterment is the most common judgment area.</span></div>
+  <div class="disclaimer tight">⚠️ Classification examples are illustrative. Apply your entity's written capitalization policy and GAAP (ASC 360) judgment; document the basis for each capitalize/expense decision.</div>`;
+}
+
+/* ---- ASSET REGISTER tab (FA subledger) ------------------------------------ */
+function registerSummary(){
+  const live=state.register.filter(a=>a.status==='In service');
+  const listedCost=live.reduce((s,a)=>s+(+a.cost||0),0);
+  const listedAccum=live.reduce((s,a)=>s+(+a.accum||0),0);
+  const c=compute();
+  return {live,listedCost,listedAccum,
+    otherCost:c.subCost-listedCost, otherAccum:c.subAccum-listedAccum,
+    subCost:c.subCost, subAccum:c.subAccum};
+}
+function tabRegister(){
+  const c=compute(); const rs=registerSummary();
+  const live=rs.live;
+  const totNBV=live.reduce((s,a)=>s+nbvOf(a),0);
+  const monthly=live.reduce((s,a)=>s+monthlyDep(a),0);
+  const fullyDep=live.filter(a=>a.method!=='None'&&nbvOf(a)<=(+a.resid||0)+1).length;
+  const rows=state.register.slice().sort((a,b)=>a.tag<b.tag?-1:1).map(a=>{
+    const disp=a.status==='Disposed';
+    return `<tr${disp?' style="opacity:.55"':''}>
+      <td class="mono">${esc(a.tag)}</td><td>${esc(a.name)}</td><td>${clsTag(a.cls)}</td>
+      <td class="num mono">${moneyK(a.cost)}</td><td class="num mono">${moneyK(a.accum)}</td>
+      <td class="num mono">${moneyK(nbvOf(a))}</td>
+      <td class="mono">${esc(a.inSvc)}</td><td class="mono">${a.lifeMo?a.lifeMo+'mo':'—'} ${esc(a.method)}</td>
+      <td class="num mono">${a.status==='In service'?money(monthlyDep(a)):'—'}</td>
+      <td><span class="badge ${disp?'b-gray':'b-green'}">${esc(a.status)}</span></td></tr>`;
+  }).join('');
+  const tie=Math.abs(rs.otherCost)<1&&Math.abs(rs.otherAccum)<1;
+  return `
+  <section class="block"><div class="grid g5">
+    ${tile('Subledger cost',moneyK(c.subCost),'FA register control','🗂️','b-indigo')}
+    ${tile('Accum. depreciation',moneyK(c.subAccum),'register A/D','📉','b-violet')}
+    ${tile('Net book value',moneyK(c.subNet),'cost + CIP − A/D','📒','b-green')}
+    ${tile('Assets on register',num(state.register.length),num(live.length)+' in service','🔢','b-blue')}
+    ${tile('Monthly depreciation',moneyK(monthly),'listed assets (run-rate)','🔄','b-gray')}
+  </div></section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">Subledger → control tie-out</span><h2>Register reconciles to the cost / A&amp;D control</h2></div>
+    <div class="card pad"><div class="kvs">
+      <div class="k">Listed assets — cost</div><div class="v">${money(rs.listedCost)}</div>
+      <div class="k">Other in-service assets (aggregated)</div><div class="v">${money(rs.otherCost)}</div>
+      <div class="k">Subledger cost control (1500–1560)</div><div class="v rf-tied">${money(rs.subCost)}</div>
+      <div class="sec">Accumulated depreciation</div>
+      <div class="k">Listed assets — A/D</div><div class="v">${money(rs.listedAccum)}</div>
+      <div class="k">Other in-service assets (aggregated)</div><div class="v">${money(rs.otherAccum)}</div>
+      <div class="k">Subledger A/D control (1600)</div><div class="v acc-tied">${money(rs.subAccum)}</div>
+    </div>
+    <div class="snap"><span class="dot" style="background:${tie?'var(--green)':'var(--amber)'}"></span><span><b>${tie?'Listed detail + aggregated remainder ties to the control totals.':'Register detail does not tie to control — investigate.'}</b> The register below is a representative extract; the aggregated line carries the remaining in-service population so the subledger ties to GL (#${TAB_NUM.recon}).</span></div>
+    </div>
+  </section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">Subledger</span><h2>Fixed-asset register</h2></div>
+    <div class="tbl-wrap"><table class="tbl" style="min-width:1040px">
+      <thead><tr><th>Tag</th><th>Asset</th><th>Class</th><th class="num">Cost</th><th class="num">Accum.</th><th class="num">NBV</th><th>In service</th><th>Life / method</th><th class="num">Monthly dep</th><th>Status</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>
+    <p class="muted" style="font-size:12px;margin-top:8px">${fullyDep} listed asset(s) are fully depreciated (NBV at residual) but still in service — review for retirement. Listed NBV ${moneyK(totNBV)}.</p>
+  </section>
+  <div class="disclaimer tight">⚠️ The asset register is the system of record for existence and depreciation. Tag, location and custodian completeness underpin the physical-verification control (#${TAB_NUM.verify}).</div>`;
+}
+
+/* ---- PHYSICAL VERIFICATION tab (existence) -------------------------------- */
+function tabVerify(){
+  const v=state.verify;
+  const scanned=v.length;
+  const found=v.filter(x=>x.found).length;
+  const notFound=v.filter(x=>!x.found);
+  const unrecorded=v.filter(x=>x.tag.startsWith('FA-UNREC'));
+  const nbvNotFound=notFound.reduce((s,x)=>s+(+x.nbv||0),0);
+  const coverage=scanned?found/scanned*100:0;
+  const rows=v.map(x=>`<tr>
+    <td class="mono">${esc(x.tag)}</td><td>${esc(x.name)}${x.note?`<div class="muted" style="font-size:11px">${esc(x.note)}</div>`:''}</td>
+    <td>${clsTag(x.cls)}</td><td>${esc(x.loc)}</td><td class="num mono">${moneyK(x.nbv)}</td>
+    <td><span class="badge ${x.found?'b-green':'b-red'}">${x.found?'Located':'Not located'}</span></td>
+    <td><span class="badge ${x.cond==='Good'?'b-green':x.cond==='Fair'?'b-amber':'b-gray'}">${esc(x.cond)}</span></td></tr>`).join('');
+  return `
+  <section class="block"><div class="grid g5">
+    ${tile('Assets scanned',num(scanned),'this verification cycle','📷','b-indigo')}
+    ${tile('Located',num(found),coverage.toFixed(0)+'% coverage','✅','b-green')}
+    ${tile('Not located',num(notFound.length),'existence exceptions','❓',notFound.length?'b-red':'b-green')}
+    ${tile('NBV not located',moneyK(nbvNotFound),'under investigation','💸',nbvNotFound>0?'b-amber':'b-green')}
+    ${tile('Unrecorded found',num(unrecorded.length),'on floor, untagged','🏷️',unrecorded.length?'b-amber':'b-green')}
+  </div></section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">Existence & completeness</span><h2>Asset inventory / tag scan</h2></div>
+    <div class="tbl-wrap"><table class="tbl" style="min-width:900px">
+      <thead><tr><th>Tag</th><th>Asset</th><th>Class</th><th>Location</th><th class="num">NBV</th><th>Existence</th><th>Condition</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>
+  </section>
+  <div class="snap"><span class="dot" style="background:${nbvNotFound>0?'var(--amber)':'var(--green)'}"></span><span><b>SOX control — physical existence (two-way).</b> Register-to-floor confirms assets exist; floor-to-register catches unrecorded assets. Net unverified NBV of ${moneyK(nbvNotFound)} flows to the subledger-vs-existence variance on #${TAB_NUM.recon}. Adjust the physically-verified NBV there as items are resolved.</span></div>
+  <div class="disclaimer tight">⚠️ Existence exceptions should be investigated and resolved (locate, transfer-out documentation, or retire) before sign-off. Unrecorded assets found must be added to the register with the correct in-service date.</div>`;
+}
+
+/* ---- LOCATIONS & CUSTODIANS tab ------------------------------------------- */
+function tabLocations(){
+  const live=state.register.filter(a=>a.status==='In service');
+  const byLoc={};
+  live.forEach(a=>{const k=a.loc;(byLoc[k]=byLoc[k]||{loc:k,cost:0,nbv:0,n:0,cust:a.cust}).cost+=(+a.cost||0);byLoc[k].nbv+=nbvOf(a);byLoc[k].n++;});
+  const locs=Object.values(byLoc).sort((a,b)=>b.nbv-a.nbv);
+  const maxNbv=Math.max(1,...locs.map(l=>l.nbv));
+  const byCust={};
+  live.forEach(a=>{const k=a.cust;(byCust[k]=byCust[k]||{cust:k,nbv:0,n:0}).nbv+=nbvOf(a);byCust[k].n++;});
+  const custs=Object.values(byCust).sort((a,b)=>b.nbv-a.nbv);
+  const cards=locs.map(l=>`<div class="bin"><div class="bin-id">${esc(l.loc)}</div>
+    <div class="bin-sku">${l.n} asset${l.n===1?'':'s'} · ${esc(l.cust)}</div>
+    <div class="bin-bar"><i style="width:${l.nbv/maxNbv*100}%;background:var(--indigo)"></i></div>
+    <div class="bin-meta"><span>NBV ${moneyK(l.nbv)}</span><span>cost ${moneyK(l.cost)}</span></div></div>`).join('');
+  const custRows=custs.map(c=>`<tr><td>${esc(c.cust)}</td><td class="num mono">${c.n}</td><td class="num mono">${moneyK(c.nbv)}</td></tr>`).join('');
+  return `
+  <section class="block"><div class="grid g4">
+    ${tile('Sites / locations',num(locs.length),'with in-service assets','📍','b-indigo')}
+    ${tile('Custodians',num(custs.length),'accountable owners','👤','b-blue')}
+    ${tile('Largest site NBV',moneyK(Math.max(0,...locs.map(l=>l.nbv))),locs[0]?esc(locs[0].loc):'—','🏢','b-green')}
+    ${tile('Listed NBV',moneyK(live.reduce((s,a)=>s+nbvOf(a),0)),'across locations','📒','b-gray')}
+  </div></section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">By location</span><h2>Asset map — net book value by site</h2></div>
+    <div class="card pad"><div class="bin-grid">${cards}</div></div>
+  </section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">Accountability</span><h2>Custodian summary</h2></div>
+    <div class="tbl-wrap"><table class="tbl" style="min-width:480px">
+      <thead><tr><th>Custodian / cost center</th><th class="num">Assets</th><th class="num">NBV</th></tr></thead>
+      <tbody>${custRows}</tbody></table></div>
+  </section>
+  <div class="snap"><span class="dot" style="background:var(--indigo)"></span><span><b>SOX control — custody & location accuracy.</b> Every asset has an assigned custodian and location, so physical verification (#${TAB_NUM.verify}) can be directed and transfers (#${TAB_NUM.transfers}) keep the register accurate.</span></div>
+  <div class="disclaimer tight">⚠️ Location/custodian summaries are built from the listed register extract; the aggregated remainder is excluded from these site rollups.</div>`;
+}
+
+/* ---- DEPRECIATION tab ----------------------------------------------------- */
+function tabDeprec(){
+  const c=compute();
+  const classRows=COST_ACCTS.filter(k=>k!=='land').map(k=>{
+    const bc=c.byClass[k];
+    // opening accum by class is not separately tracked; show period movement + register run-rate
+    const live=state.register.filter(a=>a.status==='In service'&&a.cls===k);
+    const runRate=live.reduce((s,a)=>s+monthlyDep(a),0);
+    return {k,dep:bc.dep,impair:bc.impair,dispA:0,runRate,meta:classMeta(k)};
+  });
+  const totDep=c.deprec, totImp=c.impair;
+  const annual=classRows.reduce((s,r)=>s+r.runRate,0)*12;
+  const depPctGross=c.endCost?(c.deprec*12/c.endCost*100):0;
+  const rows=classRows.map(r=>`<tr>
+    <td>${clsTag(r.k)}</td><td><span class="pill">${r.meta.method} · ${Math.round(r.meta.life/12)}yr</span></td>
+    <td class="num mono acc-tied">${money(r.dep)}</td><td class="num mono">${r.impair?money(r.impair):'—'}</td>
+    <td class="num mono">${money(r.runRate)}</td></tr>`).join('');
+  return `
+  ${rfTiePanel('deprec')}
+  <section class="block"><div class="grid g5">
+    ${tile('Depreciation expense',moneyK(totDep),'May · 6500','📉','b-violet','acc')}
+    ${tile('Impairment',moneyK(totImp),'this period','🔻','b-amber','acc')}
+    ${tile('Ending accum. dep.',moneyK(c.endAccum),'1600 control','🧮','b-blue','acc')}
+    ${tile('Annual run-rate',moneyK(annual),'register-based','🔄','b-gray')}
+    ${tile('Dep % of gross cost',depPctGross.toFixed(1)+'%','annualized','📊','b-indigo')}
+  </div></section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">By asset class</span><h2>Depreciation expense — ties to A/D roll-forward</h2></div>
+    <div class="tbl-wrap"><table class="tbl" style="min-width:720px">
+      <thead><tr><th>Class</th><th>Method</th><th class="num">Period depreciation</th><th class="num">Impairment</th><th class="num">Monthly run-rate</th></tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr><td colspan="2">Total</td><td class="num mono acc-tied">${money(totDep)}</td><td class="num mono">${money(totImp)}</td><td class="num mono">${money(annual/12)}</td></tr></tfoot>
+    </table></div>
+  </section>
+  <section class="block card pad">
+    <div class="section-head"><span class="eyebrow">Methods</span><h2>Depreciation policy</h2></div>
+    <p class="muted" style="font-size:13px">Straight-line (SL) for buildings, equipment, F&amp;F and leaseholds; double-declining-balance (DDB) for vehicles; land is not depreciated. Depreciation begins at placed-in-service and posts monthly (Dr 6500 / Cr 1600). The register run-rate is a reasonableness check against the GL depreciation posting.</p>
+  </section>
+  <div class="disclaimer tight">⚠️ Depreciation recalculation is a key SOX control. Period depreciation feeds the accumulated-depreciation roll-forward (#${TAB_NUM.recon}); compare the GL posting to the register run-rate and investigate differences.</div>`;
+}
+
+/* ---- IMPAIRMENT & REVALUATION tab (ASC 360) ------------------------------- */
+const IMPAIR_GROUPS=[
+  {grp:'Pilot-plant idle equipment',cls:'machinery',carrying:980000,undisc:1040000,fair:500000,trigger:'Idle / process change'},
+  {grp:'Genomics core (cash-generating)',cls:'machinery',carrying:6300000,undisc:11800000,fair:8200000,trigger:'Routine review'},
+  {grp:'San Diego leaseholds',cls:'leasehold',carrying:9940000,undisc:14500000,fair:10800000,trigger:'Sublease market'},
+  {grp:'Legacy IT hardware',cls:'computers',carrying:140000,undisc:90000,fair:60000,trigger:'Obsolescence'}
+];
+function tabImpair(){
+  const c=compute();
+  const tested=IMPAIR_GROUPS.map(g=>{
+    const failStep1=g.undisc<g.carrying;               // recoverability test (undiscounted CF < carrying)
+    const impairment=failStep1?Math.max(0,g.carrying-g.fair):0;
+    return {...g,failStep1,impairment};
+  });
+  const totImp=tested.reduce((s,g)=>s+g.impairment,0);
+  const failed=tested.filter(g=>g.failStep1);
+  const rows=tested.map(g=>`<tr>
+    <td>${esc(g.grp)}<div class="muted" style="font-size:11px">${esc(g.trigger)}</div></td><td>${clsTag(g.cls)}</td>
+    <td class="num mono">${moneyK(g.carrying)}</td><td class="num mono">${moneyK(g.undisc)}</td>
+    <td><span class="badge ${g.failStep1?'b-red':'b-green'}">${g.failStep1?'Not recoverable':'Recoverable'}</span></td>
+    <td class="num mono">${moneyK(g.fair)}</td>
+    <td class="num mono ${g.impairment?'acc-tied':''}">${g.impairment?money(g.impairment):'—'}</td></tr>`).join('');
+  return `
+  ${rfTiePanel('impair')}
+  <section class="block"><div class="grid g4">
+    ${tile('Asset groups tested',num(tested.length),'ASC 360 step 1','🧪','b-indigo')}
+    ${tile('Failed recoverability',num(failed.length),'undisc. CF < carrying','⚠️',failed.length?'b-red':'b-green')}
+    ${tile('Impairment recognized',moneyK(totImp),'carrying − fair value','📉',totImp?'b-amber':'b-green','acc')}
+    ${tile('Posted this period',moneyK(c.impair),'6510 → 1600','🧾','b-violet','acc')}
+  </div></section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">ASC 360 two-step test</span><h2>Long-lived asset impairment</h2></div>
+    <div class="tbl-wrap"><table class="tbl" style="min-width:880px">
+      <thead><tr><th>Asset group</th><th>Class</th><th class="num">Carrying</th><th class="num">Undisc. cash flows</th><th>Step 1 — recoverable?</th><th class="num">Fair value</th><th class="num">Impairment</th></tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr><td colspan="6">Total impairment</td><td class="num mono acc-tied">${money(totImp)}</td></tr></tfoot>
+    </table></div>
+  </section>
+  <div class="snap"><span class="dot" style="background:var(--amber)"></span><span><b>Test logic.</b> Step 1 — if the sum of <i>undiscounted</i> future cash flows is below carrying value, the asset group fails recoverability. Step 2 — impairment = carrying value − fair value. Under US GAAP impairment write-downs are <b>not reversed</b>; revaluation upward is an IFRS-only option.</span></div>
+  <div class="disclaimer tight">⚠️ Impairment cash-flow and fair-value inputs are illustrative. Apply ASC 360 (or IAS 36 under IFRS) with supportable assumptions; document indicators and the asset-grouping basis.</div>`;
+}
+
+/* ---- USEFUL LIVES & COMPONENTS tab ---------------------------------------- */
+const LIFE_REVIEWS=[
+  {cls:'machinery',asset:'NGS sequencing line ×4',policy:84,assessed:60,reason:'Faster tech refresh cycle',nbv:6300000},
+  {cls:'buildings',asset:'Building A — HQ & labs',policy:480,assessed:480,reason:'No change',nbv:38400000},
+  {cls:'computers',asset:'GPU compute cluster',policy:36,assessed:48,reason:'Extended deployment plan',nbv:1250000}
+];
+const COMPONENTS=[
+  {asset:'Building B — QC lab',comp:'Structural shell',cost:2760000,life:480},
+  {asset:'Building B — QC lab',comp:'HVAC / mechanical',cost:1150000,life:180},
+  {asset:'Building B — QC lab',comp:'Interior fit-out',cost:690000,life:120}
+];
+function lifeImpact(r){
+  if(r.assessed===r.policy) return 0;
+  // prospective: remaining NBV over new remaining life vs old remaining life (rough annual delta)
+  const oldAnnual=r.nbv/(r.policy/12), newAnnual=r.nbv/(r.assessed/12);
+  return newAnnual-oldAnnual;
+}
+function tabLives(){
+  const rows=LIFE_REVIEWS.map(r=>{
+    const d=lifeImpact(r);
+    return `<tr><td>${esc(r.asset)}</td><td>${clsTag(r.cls)}</td>
+      <td class="num mono">${Math.round(r.policy/12)}yr</td><td class="num mono">${Math.round(r.assessed/12)}yr</td>
+      <td class="muted">${esc(r.reason)}</td><td class="num mono">${moneyK(r.nbv)}</td>
+      <td class="num mono ${d>0?'down':d<0?'up':''}">${d?(d>0?'+':'')+moneyK(d)+'/yr':'—'}</td></tr>`;
+  }).join('');
+  const compRows=COMPONENTS.map(c=>`<tr><td>${esc(c.asset)}</td><td>${esc(c.comp)}</td>
+    <td class="num mono">${moneyK(c.cost)}</td><td class="num mono">${Math.round(c.life/12)}yr</td>
+    <td class="num mono">${money(c.cost/c.life)}</td></tr>`).join('');
+  const changes=LIFE_REVIEWS.filter(r=>r.assessed!==r.policy).length;
+  const netImpact=LIFE_REVIEWS.reduce((s,r)=>s+lifeImpact(r),0);
+  return `
+  <section class="block"><div class="grid g4">
+    ${tile('Lives reviewed',num(LIFE_REVIEWS.length),'this cycle','🔍','b-indigo')}
+    ${tile('Life changes',num(changes),'prospective','🔧',changes?'b-amber':'b-green')}
+    ${tile('Annual dep impact',(netImpact>0?'+':'')+moneyK(netImpact),'from life changes','📈',netImpact>0?'b-amber':'b-green')}
+    ${tile('Componentized assets',num([...new Set(COMPONENTS.map(c=>c.asset))].length),'split by component','🧩','b-blue')}
+  </div></section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">Useful-life review</span><h2>Policy vs assessed life</h2></div>
+    <div class="tbl-wrap"><table class="tbl" style="min-width:840px">
+      <thead><tr><th>Asset</th><th>Class</th><th class="num">Policy life</th><th class="num">Assessed life</th><th>Basis</th><th class="num">NBV</th><th class="num">Annual dep Δ</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>
+    <p class="muted" style="font-size:12px;margin-top:8px">Useful-life and residual changes are <b>changes in estimate</b> — applied prospectively over the remaining life (ASC 250); prior periods are not restated.</p>
+  </section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">Component depreciation</span><h2>Componentized assets</h2></div>
+    <div class="tbl-wrap"><table class="tbl" style="min-width:620px">
+      <thead><tr><th>Asset</th><th>Component</th><th class="num">Cost</th><th class="num">Life</th><th class="num">Monthly dep</th></tr></thead>
+      <tbody>${compRows}</tbody></table></div>
+  </section>
+  <div class="disclaimer tight">⚠️ Significant components with different useful lives should be depreciated separately. Reassess useful lives, residual values and methods at least annually and document any changes in estimate.</div>`;
+}
+
+/* ---- DISPOSALS & RETIREMENTS tab ------------------------------------------ */
+function tabDisposals(){
+  const c=compute();
+  const D=state.disposals.map(d=>{const nbv=(+d.cost||0)-(+d.accum||0);return {...d,nbv,gl:(+d.proceeds||0)-nbv};});
+  const totCost=D.reduce((s,d)=>s+(+d.cost||0),0);
+  const totAccum=D.reduce((s,d)=>s+(+d.accum||0),0);
+  const totProc=D.reduce((s,d)=>s+(+d.proceeds||0),0);
+  const totGL=D.reduce((s,d)=>s+d.gl,0);
+  const rows=D.map(d=>`<tr>
+    <td class="mono">${esc(d.ref)}</td><td>${esc(d.name)}<div class="muted" style="font-size:11px">${esc(d.tag)} · ${esc(d.method)}</div></td>
+    <td>${clsTag(d.cls)}</td><td class="num mono rf-tied">${moneyK(d.cost)}</td><td class="num mono acc-tied">${moneyK(d.accum)}</td>
+    <td class="num mono">${moneyK(d.nbv)}</td><td class="num mono">${moneyK(d.proceeds)}</td>
+    <td class="num mono ${d.gl>0?'up':d.gl<0?'down':''}">${d.gl>0?'+':''}${moneyK(d.gl)}</td>
+    <td><span class="badge ${d.approved?'b-green':'b-amber'}">${d.approved?'Authorized':'Pending'}</span></td></tr>`).join('');
+  return `
+  ${rfTiePanel('disposals')}
+  <section class="block"><div class="grid g5">
+    ${tile('Disposals',num(D.length),'this period','♻️','b-indigo')}
+    ${tile('Cost removed',moneyK(totCost),'from 1500–1560','🏗️','b-blue','rf')}
+    ${tile('A/D removed',moneyK(totAccum),'from 1600','📉','b-violet','acc')}
+    ${tile('Proceeds',moneyK(totProc),'cash received','💵','b-green')}
+    ${tile('Net gain/(loss)',(totGL>0?'+':'')+moneyK(totGL),'proceeds − NBV','⚖️',totGL>=0?'b-green':'b-red')}
+  </div></section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">Retirements</span><h2>Disposals — cost &amp; A/D removed tie to the roll-forwards</h2></div>
+    <div class="tbl-wrap"><table class="tbl" style="min-width:980px">
+      <thead><tr><th>Ref</th><th>Asset</th><th>Class</th><th class="num">Cost</th><th class="num">Accum.</th><th class="num">NBV</th><th class="num">Proceeds</th><th class="num">Gain/(loss)</th><th>Authorization</th></tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr><td colspan="3">Total (${D.length})</td><td class="num mono rf-tied">${money(totCost)}</td><td class="num mono acc-tied">${money(totAccum)}</td><td class="num mono">${money(totCost-totAccum)}</td><td class="num mono">${money(totProc)}</td><td class="num mono">${money(totGL)}</td><td></td></tr></tfoot>
+    </table></div>
+  </section>
+  <div class="snap"><span class="dot" style="background:var(--indigo)"></span><span><b>Disposal entry.</b> Dr Cash (proceeds) + Dr Accumulated depreciation, Cr Asset (cost), with the plug to Gain (7100) or Loss (7200). Cost removed feeds the gross-cost roll-forward and A/D removed feeds the A/D roll-forward (#${TAB_NUM.recon}). Each retirement requires disposal authorization (#${TAB_NUM.approvals}).</span></div>
+  <div class="disclaimer tight">⚠️ Confirm proceeds, NBV and authorization for each retirement before posting the gain/loss. Disposed assets should be flagged on the register and removed from future depreciation.</div>`;
+}
+
+/* ---- TRANSFERS & RECLASSES tab -------------------------------------------- */
+function tabTransfers(){
+  const c=compute();
+  const reclass=state.txns.filter(t=>t.type==='reclass');
+  const totReclass=reclass.reduce((s,t)=>s+(+t.amount||0),0);
+  const rows=reclass.map(t=>`<tr><td class="mono">${esc(t.date)}</td><td class="mono">${esc(t.ref)}</td><td>${esc(t.memo)}</td>
+    <td>${clsTag(t.acct2||t.acct)}</td><td>→</td><td>${clsTag(t.acct)}</td><td class="num mono">${moneyK(t.amount)}</td></tr>`).join('')
+    ||'<tr><td colspan="7" class="muted" style="text-align:center">No reclasses this period.</td></tr>';
+  // illustrative inter-location transfers (register accuracy)
+  const moves=[
+    {ref:'XFR-2210',asset:'Fork trucks & yard vehicles',from:'Fremont yard',to:'Warehouse',cust:'Supply chain'},
+    {ref:'XFR-2214',asset:'GPU compute cluster',from:'Staging',to:'Data center',cust:'IT'}
+  ];
+  const moveRows=moves.map(m=>`<tr><td class="mono">${esc(m.ref)}</td><td>${esc(m.asset)}</td><td>${esc(m.from)}</td><td>→ ${esc(m.to)}</td><td>${esc(m.cust)}</td></tr>`).join('');
+  return `
+  <section class="block"><div class="grid g4">
+    ${tile('Class reclasses',num(reclass.length),'between FA classes','🔁','b-indigo')}
+    ${tile('Reclass gross',moneyK(totReclass),'net $0 to total cost','⚖️','b-blue')}
+    ${tile('Location transfers',num(moves.length),'register accuracy','📦','b-green')}
+    ${tile('Net cost impact',money(0),'company-wide','🟰','b-gray')}
+  </div></section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">Class reclassifications</span><h2>Reclasses between asset classes — net $0</h2></div>
+    <div class="tbl-wrap"><table class="tbl" style="min-width:760px">
+      <thead><tr><th>Date</th><th>Ref</th><th>Memo</th><th>From class</th><th></th><th>To class</th><th class="num">Amount</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>
+    <p class="muted" style="font-size:12px;margin-top:8px">Reclasses move cost between classes (e.g., F&amp;F → leasehold) without changing total gross PP&amp;E — they appear as a net-$0 memo line on the cost roll-forward (#${TAB_NUM.recon}). Depreciation may change if the new class has a different life.</p>
+  </section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">Inter-location</span><h2>Asset movements — location &amp; custodian</h2></div>
+    <div class="tbl-wrap"><table class="tbl" style="min-width:600px">
+      <thead><tr><th>Ref</th><th>Asset</th><th>From</th><th>To</th><th>Custodian</th></tr></thead>
+      <tbody>${moveRows}</tbody></table></div>
+  </section>
+  <div class="disclaimer tight">⚠️ Inter-company or cross-border transfers may have cost-basis, tax and elimination implications beyond this single-entity workspace. Keep location/custodian updated so physical verification stays directed.</div>`;
+}
+
+/* ---- LEASES — ROU (ASC 842) tab ------------------------------------------- */
+function leaseRoll(){
+  const L=state.leases;
+  const rouOpen=L.reduce((s,l)=>s+(+l.rouOpen||0),0);
+  const rouAdd=L.reduce((s,l)=>s+(+l.addRou||0),0);
+  const rouAmort=L.reduce((s,l)=>s+(+l.amort||0),0);
+  const rouEnd=rouOpen+rouAdd-rouAmort;
+  const liabOpen=L.reduce((s,l)=>s+(+l.liabOpen||0),0);
+  const liabAdd=L.reduce((s,l)=>s+(+l.addLiab||0),0);
+  const interest=L.reduce((s,l)=>s+(+l.interest||0),0);
+  const payment=L.reduce((s,l)=>s+(+l.payment||0),0);
+  const liabEnd=liabOpen+liabAdd+interest-payment;
+  return {L,rouOpen,rouAdd,rouAmort,rouEnd,liabOpen,liabAdd,interest,payment,liabEnd};
+}
+function tabLeases(){
+  const r=leaseRoll();
+  const rows=r.L.map(l=>{
+    const rEnd=(+l.rouOpen||0)+(+l.addRou||0)-(+l.amort||0);
+    const lEnd=(+l.liabOpen||0)+(+l.addLiab||0)+(+l.interest||0)-(+l.payment||0);
+    return `<tr><td class="mono">${esc(l.ref)}</td><td>${esc(l.name)}</td>
+      <td><span class="badge ${l.type==='Finance'?'b-violet':'b-blue'}">${esc(l.type)}</span></td>
+      <td class="num mono">${moneyK(rEnd)}</td><td class="num mono">${moneyK(lEnd)}</td>
+      <td class="num mono">${money(l.amort)}</td><td class="num mono">${money(l.interest)}</td><td class="mono">${esc(l.termEnd)}</td></tr>`;
+  }).join('');
+  return `
+  <section class="block"><div class="grid g5">
+    ${tile('ROU asset (ending)',moneyK(r.rouEnd),'1580 · ASC 842','🏢','b-indigo')}
+    ${tile('Lease liability (ending)',moneyK(r.liabEnd),'2400','💳','b-violet')}
+    ${tile('ROU amortization',moneyK(r.rouAmort),'period','📉','b-blue')}
+    ${tile('Interest accretion',moneyK(r.interest),'on lease liability','📈','b-amber')}
+    ${tile('Leases',num(r.L.length),'operating + finance','📃','b-gray')}
+  </div></section>
+  <section class="block grid g2" style="align-items:start">
+    <div class="card pad">
+      <div class="section-head"><span class="eyebrow">1580</span><h2>ROU asset roll-forward</h2></div>
+      <div class="rf">
+        <div class="rfrow begin"><div class="lab"><span class="sgn"></span>Opening ROU asset</div><div class="val">${money(r.rouOpen)}</div></div>
+        <div class="rfrow add"><div class="lab"><span class="sgn">+</span>New leases commenced</div><div class="val">${money(r.rouAdd)}</div></div>
+        <div class="rfrow sub"><div class="lab"><span class="sgn">−</span>ROU amortization</div><div class="val">${money(r.rouAmort)}</div></div>
+        <div class="rfrow end"><div class="lab"><span class="sgn">=</span>Ending ROU asset</div><div class="val">${money(r.rouEnd)}</div></div>
+      </div>
+    </div>
+    <div class="card pad">
+      <div class="section-head"><span class="eyebrow">2400</span><h2>Lease liability roll-forward</h2></div>
+      <div class="rf">
+        <div class="rfrow begin"><div class="lab"><span class="sgn"></span>Opening lease liability</div><div class="val">${money(r.liabOpen)}</div></div>
+        <div class="rfrow add"><div class="lab"><span class="sgn">+</span>New leases commenced</div><div class="val">${money(r.liabAdd)}</div></div>
+        <div class="rfrow add"><div class="lab"><span class="sgn">+</span>Interest accretion</div><div class="val">${money(r.interest)}</div></div>
+        <div class="rfrow sub"><div class="lab"><span class="sgn">−</span>Lease payments</div><div class="val">${money(r.payment)}</div></div>
+        <div class="rfrow end"><div class="lab"><span class="sgn">=</span>Ending lease liability</div><div class="val">${money(r.liabEnd)}</div></div>
+      </div>
+    </div>
+  </section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">Portfolio</span><h2>Lease register</h2></div>
+    <div class="tbl-wrap"><table class="tbl" style="min-width:880px">
+      <thead><tr><th>Ref</th><th>Lease</th><th>Type</th><th class="num">ROU (end)</th><th class="num">Liability (end)</th><th class="num">Amort</th><th class="num">Interest</th><th>Term end</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>
+  </section>
+  <div class="snap"><span class="dot" style="background:var(--blue)"></span><span><b>ASC 842.</b> Right-of-use assets (1580) and lease liabilities (2400) are reconciled separately from owned PP&amp;E. Operating leases amortize the ROU on a straight-line single-expense basis; finance leases split amortization and interest. The new May lease (LSE-0091) commenced at ${moneyK(r.rouAdd)}.</span></div>
+  <div class="disclaimer tight">⚠️ Lease classification, discount rate and remeasurement under ASC 842 require judgment. ROU assets are presented separately from owned fixed assets; do not include them in the PP&amp;E control totals.</div>`;
+}
+
+/* ---- CAPEX LIABILITIES & ACCRUALS tab ------------------------------------- */
+const RETENTION=[
+  {proj:'CIP-BLD-C',contractor:'Turner Life Sciences',contractVal:22000000,billedToDate:16200000,retentionPct:5,held:810000},
+  {proj:'CIP-AUTO-1',contractor:'Automation Dynamics',contractVal:8500000,billedToDate:5100000,retentionPct:10,held:510000},
+  {proj:'CIP-LH-SD',contractor:'Pacific Build Group',contractVal:6400000,billedToDate:3900000,retentionPct:5,held:195000}
+];
+function tabLiab(){
+  const c=compute();
+  // Capex AP & accrual roll-forward (illustrative opening + accrued − invoiced)
+  const apOpen=8400000, accrued=c.additions+c.cipSpend, invoiced=11200000, apEnd=apOpen+accrued-invoiced;
+  const retHeld=RETENTION.reduce((s,r)=>s+(+r.held||0),0);
+  const gri=2300000; // capex goods/services received not invoiced
+  const retRows=RETENTION.map(r=>`<tr><td class="mono">${esc(r.proj)}</td><td>${esc(r.contractor)}</td>
+    <td class="num mono">${moneyK(r.contractVal)}</td><td class="num mono">${moneyK(r.billedToDate)}</td>
+    <td class="num mono">${r.retentionPct}%</td><td class="num mono">${moneyK(r.held)}</td></tr>`).join('');
+  return `
+  <section class="block"><div class="grid g4">
+    ${tile('Capex AP (ending)',moneyK(apEnd),'2100 · vendor payables','💳','b-indigo')}
+    ${tile('Accrued capex (RNI)',moneyK(gri),'received not invoiced','📥','b-violet')}
+    ${tile('Retention held',moneyK(retHeld),'2180 · contractor holdback','🔒','b-amber')}
+    ${tile('Period capex accrued',moneyK(accrued),'additions + CIP spend','🧾','b-blue')}
+  </div></section>
+  <section class="block grid g2" style="align-items:start">
+    <div class="card pad">
+      <div class="section-head"><span class="eyebrow">2100 / 2180</span><h2>Capex liability roll-forward</h2></div>
+      <div class="rf">
+        <div class="rfrow begin"><div class="lab"><span class="sgn"></span>Opening capex AP &amp; accruals</div><div class="val">${money(apOpen)}</div></div>
+        <div class="rfrow add"><div class="lab"><span class="sgn">+</span>Capex accrued (additions + CIP)</div><div class="val">${money(accrued)}</div></div>
+        <div class="rfrow sub"><div class="lab"><span class="sgn">−</span>Invoiced &amp; paid</div><div class="val">${money(invoiced)}</div></div>
+        <div class="rfrow end"><div class="lab"><span class="sgn">=</span>Ending capex AP &amp; accruals</div><div class="val">${money(apEnd)}</div></div>
+      </div>
+      <div class="snap"><span class="dot" style="background:var(--violet)"></span><span><b>Three-way match (capex).</b> PO → goods/services receipt → vendor invoice. Accrue received-not-invoiced capex of ${moneyK(gri)} so additions are complete; release retention on contractor sign-off.</span></div>
+    </div>
+    <div class="card pad">
+      <div class="section-head"><span class="eyebrow">Holdback</span><h2>Contractor retention schedule</h2></div>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Project</th><th>Contractor</th><th class="num">Contract</th><th class="num">Billed</th><th class="num">Ret %</th><th class="num">Held</th></tr></thead>
+        <tbody>${retRows}</tbody>
+        <tfoot><tr><td colspan="5">Total retention held</td><td class="num mono">${money(retHeld)}</td></tr></tfoot></table></div>
+    </div>
+  </section>
+  <div class="disclaimer tight">⚠️ Capex accrual and retention balances are illustrative until contract- and invoice-level data are imported. Accrue capex completely at period end so additions (#${TAB_NUM.additions}) and CIP (#${TAB_NUM.cip}) are not understated.</div>`;
+}
+
+/* ---- TAX DEPRECIATION tab (book vs tax / MACRS) --------------------------- */
+function tabTax(){
+  const rate=(+state.taxRate||0)+(+state.stateTaxRate||0);
+  const T=state.tax.map(t=>{const diff=(+t.taxYtd||0)-(+t.bookYtd||0);return {...t,diff,dtl:diff*rate};});
+  const bookTot=T.reduce((s,t)=>s+(+t.bookYtd||0),0);
+  const taxTot=T.reduce((s,t)=>s+(+t.taxYtd||0),0);
+  const diffTot=taxTot-bookTot;
+  const bonusTot=T.reduce((s,t)=>s+(+t.bonus||0),0);
+  const s179Tot=T.reduce((s,t)=>s+(+t.s179||0),0);
+  const dtlTot=diffTot*rate;
+  const rows=T.map(t=>`<tr><td>${clsTag(t.cls)}</td><td><span class="pill">${esc(t.macrs)}</span></td>
+    <td class="num mono">${moneyK(t.bookYtd)}</td><td class="num mono">${moneyK(t.taxYtd)}</td>
+    <td class="num mono ${t.diff>0?'down':'up'}">${(t.diff>0?'+':'')}${moneyK(t.diff)}</td>
+    <td class="num mono">${t.bonus?moneyK(t.bonus):'—'}</td><td class="num mono">${t.s179?moneyK(t.s179):'—'}</td>
+    <td class="num mono">${moneyK(t.dtl)}</td></tr>`).join('');
+  return `
+  <section class="block"><div class="grid g5">
+    ${tile('Book depreciation (YTD)',moneyK(bookTot),'6500 · GAAP','📘','b-blue')}
+    ${tile('Tax depreciation (YTD)',moneyK(taxTot),'MACRS + bonus + 179','📕','b-violet')}
+    ${tile('Book-tax difference',(diffTot>0?'+':'')+moneyK(diffTot),'tax over/(under) book','↔️',diffTot>0?'b-amber':'b-green')}
+    ${tile('Bonus + §179',moneyK(bonusTot+s179Tot),'accelerated this year','⚡','b-indigo')}
+    ${tile('Deferred tax impact',moneyK(dtlTot),'at '+(rate*100).toFixed(1)+'%','🏛️',dtlTot>0?'b-amber':'b-green')}
+  </div></section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">Book vs tax</span><h2>Depreciation timing differences by class</h2></div>
+    <div class="tbl-wrap"><table class="tbl" style="min-width:900px">
+      <thead><tr><th>Class</th><th>Tax method</th><th class="num">Book YTD</th><th class="num">Tax YTD</th><th class="num">Difference</th><th class="num">Bonus</th><th class="num">§179</th><th class="num">Deferred tax</th></tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr><td colspan="2">Total</td><td class="num mono">${money(bookTot)}</td><td class="num mono">${money(taxTot)}</td><td class="num mono">${money(diffTot)}</td><td class="num mono">${money(bonusTot)}</td><td class="num mono">${money(s179Tot)}</td><td class="num mono">${money(dtlTot)}</td></tr></tfoot>
+    </table></div>
+  </section>
+  <section class="block card pad">
+    <div class="section-head"><span class="eyebrow">Rates</span><h2>Effective tax rate</h2></div>
+    <div class="form-grid">
+      <div class="field"><label>Federal rate</label><input type="number" step="0.01" value="${state.taxRate}" onchange="setNum('taxRate',this.value)"></div>
+      <div class="field"><label>State rate</label><input type="number" step="0.0001" value="${state.stateTaxRate}" onchange="setNum('stateTaxRate',this.value)"></div>
+    </div>
+    <p class="muted" style="font-size:12.5px">Tax depreciation (MACRS, with bonus depreciation and §179 expensing) typically exceeds book depreciation in early years, creating a <b>deferred tax liability</b> that reverses later. Difference × ${(rate*100).toFixed(1)}% ≈ the period deferred-tax movement.</p>
+  </section>
+  <div class="disclaimer tight">⚠️ Book-tax figures are illustrative. MACRS conventions (half-year/mid-quarter), bonus phase-down, §179 limits and state conformity require a tax provision; this is not tax advice.</div>`;
+}
+
+/* ---- INSURANCE & PROPERTY TAX tab ----------------------------------------- */
+function tabInsure(){
+  const I=state.insure.map(x=>({...x,gap:(+x.replace||0)-(+x.insured||0)}));
+  const nbvTot=I.reduce((s,x)=>s+(+x.nbv||0),0);
+  const repTot=I.reduce((s,x)=>s+(+x.replace||0),0);
+  const insTot=I.reduce((s,x)=>s+(+x.insured||0),0);
+  const assessTot=I.reduce((s,x)=>s+(+x.assessed||0),0);
+  const gapTot=repTot-insTot;
+  const rows=I.map(x=>`<tr><td>${esc(x.loc)}<div class="muted" style="font-size:11px">${esc(x.policy)}</div></td><td>${esc(x.cls)}</td>
+    <td class="num mono">${moneyK(x.nbv)}</td><td class="num mono">${moneyK(x.replace)}</td><td class="num mono">${moneyK(x.insured)}</td>
+    <td class="num mono ${x.gap>0?'down':''}">${x.gap>0?moneyK(x.gap):'—'}</td>
+    <td class="num mono">${x.assessed?moneyK(x.assessed):'—'}</td></tr>`).join('');
+  return `
+  <section class="block"><div class="grid g5">
+    ${tile('Net book value',moneyK(nbvTot),'insured locations','📒','b-blue')}
+    ${tile('Replacement value',moneyK(repTot),'insurance schedule','🏗️','b-indigo')}
+    ${tile('Insured value',moneyK(insTot),'policy limits','🛡️','b-green')}
+    ${tile('Coverage gap',moneyK(gapTot),'replacement − insured','⚠️',gapTot>0?'b-amber':'b-green')}
+    ${tile('Assessed value',moneyK(assessTot),'property-tax basis','🏛️','b-gray')}
+  </div></section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">Schedules</span><h2>Insurance &amp; property-tax reconciliation</h2></div>
+    <div class="tbl-wrap"><table class="tbl" style="min-width:900px">
+      <thead><tr><th>Location</th><th>Assets</th><th class="num">NBV</th><th class="num">Replacement</th><th class="num">Insured</th><th class="num">Gap</th><th class="num">Assessed</th></tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr><td colspan="2">Total</td><td class="num mono">${money(nbvTot)}</td><td class="num mono">${money(repTot)}</td><td class="num mono">${money(insTot)}</td><td class="num mono">${money(gapTot)}</td><td class="num mono">${money(assessTot)}</td></tr></tfoot>
+    </table></div>
+  </section>
+  <div class="snap"><span class="dot" style="background:var(--amber)"></span><span><b>Why this reconciles to FA.</b> The fixed-asset register feeds insurance values (replacement/agreed value) and property-tax renditions (assessed cost by jurisdiction). Additions and disposals must flow to these schedules so the company is neither under-insured nor over-paying property tax on retired assets.</span></div>
+  <div class="disclaimer tight">⚠️ Replacement, insured and assessed values are illustrative. Reconcile to broker statements of value and jurisdiction assessments; remove disposed assets from both.</div>`;
+}
+
+/* ---- ROLL-FORWARD ANALYTICS tab ------------------------------------------- */
+function faTrendChart(P){
+  const W=940,H=320,mL=64,mR=58,mT=18,mB=42, pw=W-mL-mR, ph=H-mT-mB;
+  const n=P.length;
+  const maxCap=Math.max(...P.map(p=>p.capex))*1.15;
+  const nbv=P.map(p=>p.nbv); const maxN=Math.max(...nbv)*1.08, minN=Math.min(...nbv)*0.94;
+  const bw=pw/n*0.6;
+  const x=i=>mL+(i+0.5)*(pw/n);
+  const yC=v=>mT+ph-(v/maxCap)*ph;
+  const yN=v=>mT+ph-((v-minN)/(maxN-minN||1))*ph;
+  let bars='',line='',dots='',xlab='',yax='',y2='';
+  P.forEach((p,i)=>{const h=(p.capex/maxCap)*ph;bars+=`<rect x="${x(i)-bw/2}" y="${mT+ph-h}" width="${bw}" height="${h}" rx="2" fill="rgba(0,200,5,.18)" stroke="rgba(0,200,5,.45)"></rect>`;});
+  nbv.forEach((v,i)=>{const px=x(i),py=yN(v);line+=(i===0?'M':'L')+px+' '+py+' ';dots+=`<circle cx="${px}" cy="${py}" r="2.4" fill="#37cdd6"></circle>`;});
+  P.forEach((p,i)=>{if(i%3===0||i===n-1){xlab+=`<text x="${x(i)}" y="${H-14}" text-anchor="middle" font-size="10" fill="#a8a59e">${p.ym.slice(2)}</text>`;}});
+  for(let g=0;g<=4;g++){const v=maxCap*g/4,yy=yC(v);yax+=`<line x1="${mL}" y1="${yy}" x2="${W-mR}" y2="${yy}" stroke="rgba(255,255,255,.07)"></line><text x="${mL-8}" y="${yy+3}" text-anchor="end" font-size="10" fill="#a8a59e">$${(v/1e6).toFixed(1)}M</text>`;}
+  for(let g=0;g<=4;g++){const v=minN+(maxN-minN)*g/4,yy=yN(v);y2+=`<text x="${W-mR+8}" y="${yy+3}" text-anchor="start" font-size="10" fill="#37cdd6">$${(v/1e6).toFixed(0)}M</text>`;}
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Capex bars and net book value line over 24 months">
+    ${yax}${bars}${y2}<path d="${line}" fill="none" stroke="#37cdd6" stroke-width="2"></path>${dots}${xlab}</svg>`;
+}
+function tabAnalytics(){
+  const an=faAnalytics(); const c=compute(); const P=state.periods;
+  const cmp=(v,label,note)=>{const dir=v>0.05?'up':v<-0.05?'down':'flat';const arrow=dir==='up'?'▲':dir==='down'?'▼':'■';
+    return `<div class="tile"><div class="top"><span class="lbl">${label}</span><span class="ic">🏗️</span></div>
+      <div class="big mono">${pct(v)}</div><div class="muted" style="font-size:11px">${note}</div></div>`;};
+  const nbvGross=(c.endCost?((c.endCost-c.endAccum)/c.endCost*100):0);
+  return `
+  <section class="block"><div class="grid g4">
+    ${tile('Net PP&E',moneyK(c.netGL),'cost + CIP − A/D','📒','b-green')}
+    ${tile('YTD capex',moneyK(an.ytdCapex),'additions + CIP cap','🏗️','b-indigo')}
+    ${tile('YTD depreciation',moneyK(an.ytdDep),'expense','📉','b-violet')}
+    ${tile('NBV / gross cost',nbvGross.toFixed(0)+'%','asset "newness"','📊','b-blue')}
+  </div></section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">Period-over-period</span><h2>Capex momentum</h2></div>
+    <div class="grid g4">
+      ${cmp(an.capexMoM,'MoM','latest vs prior month')}
+      ${cmp(an.capexQoQ.v,'QoQ','last 3 vs prior 3 months')}
+      ${cmp(an.capexYTD.v,'YTD',an.capexYTD.n+' mo this year vs last')}
+      ${cmp(an.capexYoY,'YoY','this month vs a year ago')}
+    </div>
+  </section>
+  <section class="block card chart-card">
+    <div class="section-head"><span class="eyebrow">24-month trend</span><h2>Capex &amp; net book value</h2></div>
+    <div class="chart-wrap">${faTrendChart(P)}</div>
+    <div class="chart-legend"><span class="k"><span class="bar"></span>Monthly capex (left)</span><span class="k"><span class="ln" style="border-color:#37cdd6"></span>Net book value (right)</span></div>
+  </section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">Detail</span><h2>Monthly roll-forward series</h2></div>
+    <div class="tbl-wrap"><table class="tbl" style="min-width:760px">
+      <thead><tr><th>Month</th><th class="num">Capex</th><th class="num">Depreciation</th><th class="num">Disposals</th><th class="num">Gross cost</th><th class="num">Accum.</th><th class="num">CIP</th><th class="num">NBV</th></tr></thead>
+      <tbody>${P.slice().reverse().map(p=>`<tr><td class="mono">${p.ym}</td><td class="num mono">${moneyK(p.capex)}</td><td class="num mono">${moneyK(p.dep)}</td><td class="num mono">${moneyK(p.disp)}</td><td class="num mono">${moneyK(p.gross)}</td><td class="num mono">${moneyK(p.accum)}</td><td class="num mono">${moneyK(p.cip)}</td><td class="num mono">${moneyK(p.nbv)}</td></tr>`).join('')}</tbody>
+    </table></div>
+  </section>
+  <div class="disclaimer tight">⚠️ Trend series is illustrative sample data for momentum analysis; it does not replace the period roll-forward (#${TAB_NUM.recon}).</div>`;
+}
+
+/* ---- seed data for consolidation / ARO / held-for-sale / intangibles ------ */
+function seedSubs(){
+  // Foreign subsidiaries translated at current rate (functional = local ccy). Parent already in USD.
+  return [
+    {ent:'Helixa Biosystems, Inc. (US parent)',ccy:'USD',rate:1,    cost:255850000,accum:92940000,cip:19400000,parent:true},
+    {ent:'Helixa Europe GmbH',                 ccy:'EUR',rate:1.08, cost:68000000, accum:22000000,cip:4000000},
+    {ent:'Helixa APAC Pte Ltd',                ccy:'SGD',rate:0.74, cost:54000000, accum:15000000,cip:3000000}
+  ];
+}
+function seedElims(){
+  // Consolidation eliminations on intercompany fixed-asset transfers (USD).
+  return [
+    {ref:'ELIM-FA-1',desc:'Intercompany equipment sale US→Europe — unrealized profit',cost:-1200000,accum:0},
+    {ref:'ELIM-FA-2',desc:'Excess depreciation on intercompany markup (reverse)',cost:0,accum:-150000}
+  ];
+}
+function seedAro(){
+  // Asset retirement obligations (ASC 410) — liability roll-forward inputs (USD).
+  return [
+    {id:id(),ref:'ARO-1',asset:'San Diego leasehold — restoration',liabOpen:2400000,accretion:18000,addition:0,settle:0,rate:'6.5%',settleDate:'2031-07'},
+    {id:id(),ref:'ARO-2',asset:'Bldg C cleanroom decommissioning',liabOpen:1600000,accretion:11000,addition:0,settle:0,rate:'6.5%',settleDate:'2035-09'},
+    {id:id(),ref:'ARO-3',asset:'Fremont tank-farm removal',liabOpen:900000,accretion:6000,addition:0,settle:120000,rate:'6.5%',settleDate:'2027-12'}
+  ];
+}
+function seedHfs(){
+  // Held-for-sale (ASC 360-10): measured at lower of carrying or fair value less cost to sell; dep stops.
+  return [
+    {id:id(),ref:'HFS-1',asset:'Legacy filling line',cls:'machinery',carrying:1800000,fairLessCost:1500000,plan:'Board-approved sale',since:'2026-04'},
+    {id:id(),ref:'HFS-2',asset:'Surplus warehouse parcel',cls:'land',carrying:3200000,fairLessCost:3600000,plan:'Listed with broker',since:'2026-03'},
+    {id:id(),ref:'HFS-3',asset:'Decommissioned QC instruments',cls:'machinery',carrying:640000,fairLessCost:380000,plan:'Auction pending',since:'2026-05'}
+  ];
+}
+function seedIntangibles(){
+  // Finite-lived intangibles — amortized straight-line (parallels depreciation).
+  return [
+    {id:id(),name:'Developed technology — assay platform',cost:8400000,accum:3360000,lifeMo:120,inSvc:'2022-01'},
+    {id:id(),name:'Patents — bead chemistry',cost:5200000,accum:1733000,lifeMo:180,inSvc:'2021-06'},
+    {id:id(),name:'Customer relationships (acquired)',cost:6000000,accum:2500000,lifeMo:144,inSvc:'2021-01'},
+    {id:id(),name:'Internal-use software (capitalized)',cost:3100000,accum:1550000,lifeMo:60,inSvc:'2023-05'}
+  ];
+}
+
+/* ---- CONSOLIDATION & MULTI-CURRENCY tab ----------------------------------- */
+function consolRoll(){
+  const subs=state.subs.map(s=>({...s,
+    usdCost:(+s.cost||0)*(+s.rate||1),usdAccum:(+s.accum||0)*(+s.rate||1),usdCip:(+s.cip||0)*(+s.rate||1)}));
+  subs.forEach(s=>s.usdNbv=s.usdCost-s.usdAccum+s.usdCip);
+  const sumCost=subs.reduce((a,s)=>a+s.usdCost,0);
+  const sumAccum=subs.reduce((a,s)=>a+s.usdAccum,0);
+  const sumCip=subs.reduce((a,s)=>a+s.usdCip,0);
+  const elimCost=state.elims.reduce((a,e)=>a+(+e.cost||0),0);
+  const elimAccum=state.elims.reduce((a,e)=>a+(+e.accum||0),0);
+  const conCost=sumCost+elimCost, conAccum=sumAccum+elimAccum, conCip=sumCip;
+  const conNbv=conCost-conAccum+conCip;
+  return {subs,sumCost,sumAccum,sumCip,elimCost,elimAccum,conCost,conAccum,conCip,conNbv,cta:+state.cta||0};
+}
+function tabConsol(){
+  const r=consolRoll();
+  const subRows=r.subs.map(s=>`<tr${s.parent?' class="tot"':''}>
+    <td>${esc(s.ent)}</td><td class="mono">${esc(s.ccy)}</td><td class="num mono">${s.parent?'—':s.rate.toFixed(4)}</td>
+    <td class="num mono">${moneyK(s.usdCost)}</td><td class="num mono">${moneyK(s.usdAccum)}</td>
+    <td class="num mono">${moneyK(s.usdCip)}</td><td class="num mono">${moneyK(s.usdNbv)}</td></tr>`).join('');
+  const elimRows=state.elims.map(e=>`<tr><td class="mono">${esc(e.ref)}</td><td>${esc(e.desc)}</td>
+    <td class="num mono">${e.cost?moneyK(e.cost):'—'}</td><td class="num mono">${e.accum?moneyK(e.accum):'—'}</td></tr>`).join('');
+  return `
+  <section class="block"><div class="grid g5">
+    ${tile('Consolidated gross cost',moneyK(r.conCost),'after eliminations','🌐','b-indigo')}
+    ${tile('Consolidated A/D',moneyK(r.conAccum),'after eliminations','📉','b-violet')}
+    ${tile('Consolidated CIP',moneyK(r.conCip),'group','🚧','b-blue')}
+    ${tile('Consolidated NBV',moneyK(r.conNbv),'group PP&E, net','📒','b-green')}
+    ${tile('CTA (equity)',moneyK(r.cta),'translation adjustment','🔁','b-gray')}
+  </div></section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">Translation · current-rate method</span><h2>Entity build-up to consolidated PP&amp;E</h2></div>
+    <div class="tbl-wrap"><table class="tbl" style="min-width:900px">
+      <thead><tr><th>Entity</th><th>Func. ccy</th><th class="num">FX rate</th><th class="num">Cost (USD)</th><th class="num">A/D (USD)</th><th class="num">CIP (USD)</th><th class="num">NBV (USD)</th></tr></thead>
+      <tbody>${subRows}</tbody>
+      <tfoot>
+        <tr><td colspan="3">Sum of entities (translated)</td><td class="num mono">${moneyK(r.sumCost)}</td><td class="num mono">${moneyK(r.sumAccum)}</td><td class="num mono">${moneyK(r.sumCip)}</td><td class="num mono">${moneyK(r.sumCost-r.sumAccum+r.sumCip)}</td></tr>
+        <tr><td colspan="3">Eliminations</td><td class="num mono">${moneyK(r.elimCost)}</td><td class="num mono">${moneyK(r.elimAccum)}</td><td class="num mono">—</td><td class="num mono">${moneyK(r.elimCost-r.elimAccum)}</td></tr>
+        <tr class="tot"><td colspan="3">Consolidated</td><td class="num mono">${moneyK(r.conCost)}</td><td class="num mono">${moneyK(r.conAccum)}</td><td class="num mono">${moneyK(r.conCip)}</td><td class="num mono">${moneyK(r.conNbv)}</td></tr>
+      </tfoot>
+    </table></div>
+  </section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">Elimination ledger</span><h2>Intercompany fixed-asset eliminations</h2></div>
+    <div class="tbl-wrap"><table class="tbl" style="min-width:620px">
+      <thead><tr><th>Ref</th><th>Description</th><th class="num">Cost adj.</th><th class="num">A/D adj.</th></tr></thead>
+      <tbody>${elimRows}</tbody></table></div>
+  </section>
+  <div class="snap"><span class="dot" style="background:var(--indigo)"></span><span><b>Consolidation.</b> Foreign subsidiaries (functional = local currency) are translated to USD at the period-end <b>current rate</b> for the balance sheet, with the offset to the <b>cumulative translation adjustment</b> in equity (${moneyK(r.cta)}). Intercompany asset transfers eliminate unrealized profit from cost and reverse the related excess depreciation. The US parent column equals the standalone reconciliation (#${TAB_NUM.recon}).</span></div>
+  <div class="disclaimer tight">⚠️ Translation method (current-rate vs temporal/remeasurement under ASC 830) depends on each entity's functional currency. FX rates, intercompany balances and CTA are illustrative — reconcile to your consolidation system.</div>`;
+}
+
+/* ---- ASSET RETIREMENT OBLIGATIONS tab (ASC 410) --------------------------- */
+function tabAro(){
+  const A=state.aro;
+  const open=A.reduce((s,x)=>s+(+x.liabOpen||0),0);
+  const accr=A.reduce((s,x)=>s+(+x.accretion||0),0);
+  const add=A.reduce((s,x)=>s+(+x.addition||0),0);
+  const settle=A.reduce((s,x)=>s+(+x.settle||0),0);
+  const end=open+accr+add-settle;
+  const rows=A.map(x=>{const e=(+x.liabOpen||0)+(+x.accretion||0)+(+x.addition||0)-(+x.settle||0);
+    return `<tr><td class="mono">${esc(x.ref)}</td><td>${esc(x.asset)}</td>
+      <td class="num mono">${moneyK(x.liabOpen)}</td><td class="num mono">${money(x.accretion)}</td>
+      <td class="num mono">${x.settle?moneyK(x.settle):'—'}</td><td class="num mono">${moneyK(e)}</td>
+      <td class="mono">${esc(x.rate)}</td><td class="mono">${esc(x.settleDate)}</td></tr>`;}).join('');
+  return `
+  <section class="block"><div class="grid g4">
+    ${tile('ARO liability (ending)',moneyK(end),'2500','⛏️','b-indigo')}
+    ${tile('Accretion expense',moneyK(accr),'6520 · period','📈','b-amber')}
+    ${tile('Settlements',moneyK(settle),'obligations settled','✅','b-green')}
+    ${tile('Obligations',num(A.length),'tracked','📋','b-gray')}
+  </div></section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">2500 · ASC 410</span><h2>ARO liability roll-forward</h2></div>
+    <div class="card pad"><div class="rf">
+      <div class="rfrow begin"><div class="lab"><span class="sgn"></span>Opening ARO liability</div><div class="val">${money(open)}</div></div>
+      <div class="rfrow add"><div class="lab"><span class="sgn">+</span>Accretion expense</div><div class="val">${money(accr)}</div></div>
+      <div class="rfrow add"><div class="lab"><span class="sgn">+</span>New obligations / revisions</div><div class="val">${money(add)}</div></div>
+      <div class="rfrow sub"><div class="lab"><span class="sgn">−</span>Settlements</div><div class="val">${money(settle)}</div></div>
+      <div class="rfrow end"><div class="lab"><span class="sgn">=</span>Ending ARO liability</div><div class="val">${money(end)}</div></div>
+    </div></div>
+  </section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">Detail</span><h2>Obligations by asset</h2></div>
+    <div class="tbl-wrap"><table class="tbl" style="min-width:820px">
+      <thead><tr><th>Ref</th><th>Asset / obligation</th><th class="num">Opening</th><th class="num">Accretion</th><th class="num">Settled</th><th class="num">Ending</th><th>Disc. rate</th><th>Expected settle</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>
+  </section>
+  <div class="snap"><span class="dot" style="background:var(--indigo)"></span><span><b>ASC 410.</b> The ARO is recognized at fair value when incurred; the offsetting <b>capitalized retirement cost</b> (1595) is added to the related asset and depreciated, while the liability grows by <b>accretion</b> (Dr 6520 / Cr 2500) over time to its settlement amount.</span></div>
+  <div class="disclaimer tight">⚠️ ARO measurement uses credit-adjusted risk-free discounting and estimated settlement dates/costs — illustrative here. Tie the capitalized retirement cost into the asset register and depreciation.</div>`;
+}
+
+/* ---- HELD-FOR-SALE tab (ASC 360-10) --------------------------------------- */
+function tabHfs(){
+  const H=state.hfs.map(x=>{const measured=Math.min(+x.carrying||0,+x.fairLessCost||0);return {...x,measured,writedown:Math.max(0,(+x.carrying||0)-(+x.fairLessCost||0))};});
+  const carry=H.reduce((s,x)=>s+(+x.carrying||0),0);
+  const meas=H.reduce((s,x)=>s+x.measured,0);
+  const wd=H.reduce((s,x)=>s+x.writedown,0);
+  const rows=H.map(x=>`<tr><td class="mono">${esc(x.ref)}</td><td>${esc(x.asset)}<div class="muted" style="font-size:11px">${esc(x.plan)} · since ${esc(x.since)}</div></td>
+    <td>${clsTag(x.cls)}</td><td class="num mono">${moneyK(x.carrying)}</td><td class="num mono">${moneyK(x.fairLessCost)}</td>
+    <td class="num mono">${moneyK(x.measured)}</td><td class="num mono ${x.writedown?'down':''}">${x.writedown?money(x.writedown):'—'}</td></tr>`).join('');
+  return `
+  <section class="block"><div class="grid g4">
+    ${tile('Held-for-sale carrying',moneyK(carry),'reclassed from PP&E','🏷️','b-indigo')}
+    ${tile('Measured (lower of)',moneyK(meas),'carrying vs FV − cost','⚖️','b-blue')}
+    ${tile('Write-down to FV',moneyK(wd),'impairment on reclass','🔻',wd?'b-amber':'b-green')}
+    ${tile('Assets held for sale',num(H.length),'1450','📦','b-gray')}
+  </div></section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">ASC 360-10</span><h2>Assets held for sale</h2></div>
+    <div class="tbl-wrap"><table class="tbl" style="min-width:820px">
+      <thead><tr><th>Ref</th><th>Asset</th><th>Class</th><th class="num">Carrying</th><th class="num">FV less cost to sell</th><th class="num">Measured at</th><th class="num">Write-down</th></tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr><td colspan="3">Total</td><td class="num mono">${money(carry)}</td><td class="num mono">${money(H.reduce((s,x)=>s+(+x.fairLessCost||0),0))}</td><td class="num mono">${money(meas)}</td><td class="num mono">${money(wd)}</td></tr></tfoot>
+    </table></div>
+  </section>
+  <div class="snap"><span class="dot" style="background:var(--amber)"></span><span><b>ASC 360-10 held-for-sale.</b> When criteria are met (committed plan, available for immediate sale, actively marketed, sale probable within 12 months), the asset is reclassified to held-for-sale, <b>depreciation stops</b>, and it is measured at the <b>lower of carrying amount or fair value less costs to sell</b> — a ${moneyK(wd)} write-down here.</span></div>
+  <div class="disclaimer tight">⚠️ Held-for-sale classification has strict criteria; if not met, the asset stays in PP&amp;E and continues depreciating. Fair-value-less-cost inputs are illustrative.</div>`;
+}
+
+/* ---- INTANGIBLES tab ------------------------------------------------------ */
+function tabIntangibles(){
+  const I=state.intangibles.map(x=>({...x,nbv:(+x.cost||0)-(+x.accum||0),monthly:(+x.lifeMo? (+x.cost||0)/x.lifeMo:0)}));
+  const cost=I.reduce((s,x)=>s+(+x.cost||0),0);
+  const accum=I.reduce((s,x)=>s+(+x.accum||0),0);
+  const nbv=cost-accum;
+  const monthly=I.reduce((s,x)=>s+x.monthly,0);
+  const rows=I.map(x=>`<tr><td>${esc(x.name)}</td><td class="num mono">${moneyK(x.cost)}</td><td class="num mono">${moneyK(x.accum)}</td>
+    <td class="num mono">${moneyK(x.nbv)}</td><td class="mono">${Math.round(x.lifeMo/12)}yr</td><td class="mono">${esc(x.inSvc)}</td>
+    <td class="num mono">${money(x.monthly)}</td></tr>`).join('');
+  return `
+  <section class="block"><div class="grid g4">
+    ${tile('Intangibles — cost',moneyK(cost),'1700 · finite-lived','💡','b-indigo')}
+    ${tile('Accum. amortization',moneyK(accum),'1710','📉','b-violet')}
+    ${tile('Net book value',moneyK(nbv),'unamortized','📒','b-green')}
+    ${tile('Monthly amortization',moneyK(monthly),'6505 · run-rate','🔄','b-gray')}
+  </div></section>
+  <section class="block">
+    <div class="section-head"><span class="eyebrow">Finite-lived</span><h2>Intangible amortization schedule</h2></div>
+    <div class="tbl-wrap"><table class="tbl" style="min-width:820px">
+      <thead><tr><th>Intangible</th><th class="num">Cost</th><th class="num">Accum.</th><th class="num">NBV</th><th class="num">Life</th><th>In service</th><th class="num">Monthly amort</th></tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr><td>Total</td><td class="num mono">${money(cost)}</td><td class="num mono">${money(accum)}</td><td class="num mono">${money(nbv)}</td><td colspan="2"></td><td class="num mono">${money(monthly)}</td></tr></tfoot>
+    </table></div>
+  </section>
+  <div class="snap"><span class="dot" style="background:var(--blue)"></span><span><b>Finite-lived intangibles</b> are amortized straight-line over their useful lives (Dr 6505 / Cr 1710), separate from PP&amp;E depreciation. <b>Indefinite-lived intangibles and goodwill are not amortized</b> — they are tested for impairment at least annually (not modeled here).</span></div>
+  <div class="disclaimer tight">⚠️ Intangibles are presented alongside PP&amp;E for completeness of the long-lived-asset roll-forward; classification and useful-life/impairment judgments follow ASC 350/360.</div>`;
+}
+
+/* @@TABS@@ — additional tab functions inserted above this line */
+
+/* ---- main render ---------------------------------------------------------- */
+const VIEWS={recon:tabRecon,additions:tabAdditions,cip:tabCip,cappolicy:tabCappolicy,
+  register:tabRegister,verify:tabVerify,locations:tabLocations,
+  deprec:tabDeprec,impair:tabImpair,lives:tabLives,intangibles:tabIntangibles,aro:tabAro,
+  disposals:tabDisposals,heldforsale:tabHfs,transfers:tabTransfers,leases:tabLeases,consolidation:tabConsol,
+  gl:tabGL,liab:tabLiab,approvals:tabApprovals,
+  tax:tabTax,insure:tabInsure,analytics:tabAnalytics,review:tabReview};
+function render(){ renderTabbar(); $('view').innerHTML=(VIEWS[state.tab]||tabRecon)(); save(); }
+render();
+</script>
+</body>
+</html>
