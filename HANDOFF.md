@@ -13,10 +13,17 @@ CIP, existence/tagging, impairment, book-vs-tax, leases).
 
 ## Live
 - **Standalone:** https://fixed-assets-reconciliation.vercel.app
+- **Branded:** https://app.fastinsights.io/fixed-assets-reconciliation/ (tile on the app.fastinsights.io picker —
+  added to AR-Tool-Beta `vercel.json` + `Landing.tsx`, shipped in commit `0f01e10`).
 - **Deploy:** `npx vercel deploy --prod --yes` from this dir (Vercel project `fixed-assets-reconciliation`,
-  account `jessica-dougherty-s-projects`). **Not git-connected yet** — push-to-deploy not set up.
+  account `jessica-dougherty-s-projects`). **Not git-connected yet** — local git committed + SSH remote
+  `github-jessica:jessiesfaith/fixed-assets-reconciliation` wired; create the GitHub repo, then
+  `git push -u origin main` + `vercel git connect`.
 
-## What it does (20 tabs, 9 sidebar groups)
+## What it does (24 tabs, 10 sidebar groups)
+> Added after the initial 20-tab build: **Intangibles**, **ARO (ASC 410)**, **Held for Sale (ASC 360-10)**, and
+> **Consolidation & FX** (3-entity current-rate translation + intercompany elimination ledger + CTA; sample
+> consolidated NBV **$266.34M**). localStorage key bumped to `fa_recon_v2`.
 1. **Reconciliation** — the signature view: **gross-cost roll-forward + CIP roll-forward + accumulated-
    depreciation roll-forward → net book value**, then subledger→GL→physical-existence tie-out. Sample net
    book value ties to **$182,310,000** (`varNetSub = 0`).

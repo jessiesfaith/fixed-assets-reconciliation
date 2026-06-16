@@ -17,12 +17,18 @@ Generic workflow rules live in `~/.claude/CLAUDE.md` (they apply to every repo).
   **May 2026**, `TODAY='2026-06-15'`.
 - **Package manager / framework:** none. Vanilla HTML/CSS/JS, no `package.json`, no build step, **no
   CDN deps** (Google Fonts only). The 24-month trend chart is hand-rolled inline SVG (`faTrendChart()`).
-- **Key file:** `index.html` (entire tool: inlined CSS + JS). **20 tabs** via `state.tab` + `VIEWS{}`,
+- **Key file:** `index.html` (entire tool: inlined CSS + JS). **24 tabs** via `state.tab` + `VIEWS{}`,
   presented through a **left vertical sidebar** (`renderTabbar()` builds `#sidenav` from `GROUPS`):
-  9 groups (Overview / Acquisition & CIP / Register & Existence / Depreciation & Valuation /
-  Disposals & Transfers / Leases / Accounting / Tax & Reporting / Analytics). Tabs numbered 1–20 via
-  `TAB_ORDER`/`TAB_NUM`. Order: recon, additions, cip, cappolicy, register, verify, locations, deprec,
-  impair, lives, disposals, transfers, leases, gl, liab, approvals, tax, insure, analytics, review.
+  10 groups (Overview / Acquisition & CIP / Register & Existence / Depreciation & Valuation /
+  Disposals & Transfers / Leases / **Multi-entity** / Accounting / Tax & Reporting / Analytics). Tabs numbered
+  1–24 via `TAB_ORDER`/`TAB_NUM`. Order: recon, additions, cip, cappolicy, register, verify, locations, deprec,
+  impair, lives, **intangibles, aro,** disposals, **heldforsale,** transfers, leases, **consolidation,** gl, liab,
+  approvals, tax, insure, analytics, review.
+  - **consolidation** (`tabConsol`/`consolRoll`) — 3-entity current-rate FX translation (US parent + EUR + SGD) +
+    intercompany elimination ledger (`state.elims`) + CTA (`state.cta`); parent column = the standalone recon.
+  - **intangibles** (`tabIntangibles`) — finite-lived intangible amortization (1700/1710/6505), separate from PP&E.
+  - **aro** (`tabAro`) — ASC 410 asset-retirement-obligation liability roll-forward (2500) + accretion (6520).
+  - **heldforsale** (`tabHfs`) — ASC 360-10 lower-of-carrying-or-FV-less-cost-to-sell write-down (1450).
 - **Engine — dual roll-forward (`compute()`):** journal-entry driven. `TXN_TYPES` maps each posting
   type → Dr/Cr accounts (`ACC`) + which roll-forward it moves (`book:'cost'|'cip'|'accum'`, `sign`).
   `@class` postings carry `t.acct` (the asset-class account). Derives:
@@ -49,7 +55,8 @@ Generic workflow rules live in `~/.claude/CLAUDE.md` (they apply to every repo).
   roll-forwards tagged `RF_ACCTS`.
 - **Review & Export:** exception log, three-role sign-off (preparer≠reviewer SoD flag), period lock,
   CSV + Markdown export (both roll-forwards, tie-out, CIP, disposals, leases, book-vs-tax, capex analytics).
-- **localStorage key `fa_recon_v1`** (bump `defaultState().v` + the `load()` check when the data shape changes).
+- **localStorage key `fa_recon_v2`** (bump `defaultState().v` + the `load()` check when the data shape changes;
+  v2 added subs/elims/cta/aro/hfs/intangibles).
 - **Dev (localhost):** root `.claude/launch.json` config `fixed-assets-reconciliation` on **port 8738**
   (`npx http-server`). The machine `python` is a non-functional Windows Store alias — use Node's http-server.
 - **Build / test / lint / typecheck:** none configured. Verification = manual + preview panel +
@@ -57,11 +64,16 @@ Generic workflow rules live in `~/.claude/CLAUDE.md` (they apply to every repo).
   figures above; `varNetSub` must be 0).
 - **Deploy:** **DEPLOYED 2026-06-16 via Vercel CLI** (`npx vercel deploy --prod --yes` from this dir).
   Vercel project `fixed-assets-reconciliation`, account `jessica-dougherty-s-projects`.
-  **Production:** **https://fixed-assets-reconciliation.vercel.app** (clean alias was available).
-  Latest deployment id `dpl_H2g6SLeKgm4CSNDsEsez7AM2xBYt`.
-- **GitHub:** **not yet git-connected** (deploy was CLI-only). To git-connect like the other tools:
-  create `jessiesfaith/fixed-assets-reconciliation`, push via the SSH alias `github-jessica`, and
-  `vercel git connect` (temporarily set origin to the https URL for the connect, then restore the alias).
+  **Production:** **https://fixed-assets-reconciliation.vercel.app** (clean alias was available) +
+  branded **https://app.fastinsights.io/fixed-assets-reconciliation/**.
+- **Branded path LIVE:** the `app.fastinsights.io` tile + redirect/rewrite were added to the **AR-Tool-Beta**
+  repo (`vercel.json` proxy → the `.vercel.app` alias + a `Factory`-icon tile in `src/pages/Landing.tsx`),
+  shipped in commit `0f01e10` (bundled with the concurrent lease-accounting tile; both pushed together → main
+  site auto-deployed).
+- **GitHub:** **not yet git-connected** (this repo's standalone deploy was CLI-only). Local git is committed with
+  the SSH remote `github-jessica:jessiesfaith/fixed-assets-reconciliation` already set; the GitHub repo just needs
+  creating, then `git push -u origin main` + `vercel git connect` (temporarily set origin to the https URL for the
+  connect, then restore the alias).
 
 ## Conventions (match the other Fast Insights tools)
 - `vercel.json` = `{ "cleanUrls": true }`. `.vercelignore` keeps everything but `index.html` +
