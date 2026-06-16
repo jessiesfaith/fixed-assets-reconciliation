@@ -15,10 +15,9 @@ CIP, existence/tagging, impairment, book-vs-tax, leases).
 - **Standalone:** https://fixed-assets-reconciliation.vercel.app
 - **Branded:** https://app.fastinsights.io/fixed-assets-reconciliation/ (tile on the app.fastinsights.io picker —
   added to AR-Tool-Beta `vercel.json` + `Landing.tsx`, shipped in commit `0f01e10`).
-- **Deploy:** `npx vercel deploy --prod --yes` from this dir (Vercel project `fixed-assets-reconciliation`,
-  account `jessica-dougherty-s-projects`). **Not git-connected yet** — local git committed + SSH remote
-  `github-jessica:jessiesfaith/fixed-assets-reconciliation` wired; create the GitHub repo, then
-  `git push -u origin main` + `vercel git connect`.
+- **Deploy:** **git-connected** — `git push origin main` (via the `github-jessica` SSH alias) → Vercel
+  auto-deploys. Manual alt: `npx vercel deploy --prod --yes`. Vercel project `fixed-assets-reconciliation`,
+  account `jessica-dougherty-s-projects`, GitHub `jessiesfaith/fixed-assets-reconciliation`.
 
 ## What it does (24 tabs, 10 sidebar groups)
 > Added after the initial 20-tab build: **Intangibles**, **ARO (ASC 410)**, **Held for Sale (ASC 360-10)**, and

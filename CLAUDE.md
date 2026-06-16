@@ -70,10 +70,11 @@ Generic workflow rules live in `~/.claude/CLAUDE.md` (they apply to every repo).
   repo (`vercel.json` proxy → the `.vercel.app` alias + a `Factory`-icon tile in `src/pages/Landing.tsx`),
   shipped in commit `0f01e10` (bundled with the concurrent lease-accounting tile; both pushed together → main
   site auto-deployed).
-- **GitHub:** **not yet git-connected** (this repo's standalone deploy was CLI-only). Local git is committed with
-  the SSH remote `github-jessica:jessiesfaith/fixed-assets-reconciliation` already set; the GitHub repo just needs
-  creating, then `git push -u origin main` + `vercel git connect` (temporarily set origin to the https URL for the
-  connect, then restore the alias).
+- **GitHub:** **git-connected** to **`jessiesfaith/fixed-assets-reconciliation`** (2026-06-16). Push via the SSH
+  alias `github-jessica`; `git push origin main` → Vercel auto-deploys. **`vercel git connect` gotcha:** it can't
+  parse the `github-jessica:` SSH-alias remote — temporarily `git remote set-url origin
+  https://github.com/jessiesfaith/fixed-assets-reconciliation.git`, run `npx vercel git connect --yes`, then
+  restore the SSH alias for pushing.
 
 ## Conventions (match the other Fast Insights tools)
 - `vercel.json` = `{ "cleanUrls": true }`. `.vercelignore` keeps everything but `index.html` +
