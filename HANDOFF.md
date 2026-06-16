@@ -45,20 +45,23 @@ CIP, existence/tagging, impairment, book-vs-tax, leases).
   card on contributing tabs; `rfLineDetail()` resolves each line to its postings.
 - **Approvals:** `APPROVAL` 5-tier DOA/AFE matrix; manual entries post Pending; disposals need separate
   authorization (`approveDisp`).
-- **localStorage key `fa_recon_v1`** — bump it (and `defaultState().v` + the `load()` check) on any data-shape change.
+- **localStorage key `fa_recon_v2`** — bump it (and `defaultState().v` + the `load()` check) on any data-shape change.
 
 ## Dev / verify
 - Local: root `.claude/launch.json` → `fixed-assets-reconciliation` on **port 8738**
   (`preview_start name:fixed-assets-reconciliation`, then browser → localhost:8738).
 - No build/test/lint. Verify by loading and checking: cost RF ends **$255,850,000**, CIP **$19,400,000**,
-  A/D **$92,940,000**, NBV **$182,310,000**, `varNetSub = 0`, all 20 tabs render, no console errors.
-  Syntax-check the inline script with `node --check` after extracting `<script>…</script>`.
-- **Verified this session:** `compute()` ties to all the above; all 20 `VIEWS` render with no errors;
-  no console errors; live URL returns HTTP 200. (Preview `screenshot` tool times out on this machine —
-  verify via `preview_eval` DOM reads.)
+  A/D **$92,940,000**, standalone NBV **$182,310,000**, consolidated NBV **$266,340,000**, `varNetSub = 0`,
+  all **24** tabs render, no console errors. Syntax-check the inline script with `node --check` after
+  extracting `<script>…</script>`.
+- **Verified this session:** `compute()` ties to all the above; all 24 `VIEWS` render with no errors;
+  live URL returns HTTP 200. (Preview `screenshot` tool times out on this machine — verify via
+  `preview_eval` DOM reads + `compute()`/`consolRoll()`.)
 
-## State: complete — built, verified, deployed
-No known defects. Possible next asks (not requested): **git-connect** for push-to-deploy + add a tile/proxy
-on `app.fastinsights.io` (mirror the inventory tool's `vercel.json` redirect + Landing tile); calibrate the
-DOA/AFE thresholds, capitalization threshold, tax rates and useful-life policy to the real company; import
-real subledger detail so the register lists the full population instead of detail + aggregated remainder.
+## State: complete — built, verified, deployed, git-connected, cleaned & handed off
+No known defects. Code cleaned (removed dead helpers `money2`/`monthsBetween` and unused `.coststack`/`.leg`/
+`.zone` CSS carried over from the inventory tool). **Git-connected with push-to-deploy verified** —
+`git push origin main` (SSH alias `github-jessica`) auto-deploys. Branded path live on `app.fastinsights.io`.
+Possible next asks (not requested): calibrate the DOA/AFE thresholds, capitalization threshold, tax rates and
+useful-life policy to the real company; import real subledger detail so the register lists the full population
+instead of detail + aggregated remainder; add ROU/lease detail to tie to the dedicated `lease-accounting` tool.

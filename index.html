@@ -99,7 +99,6 @@
   .tile .lbl{font-size:12.5px;color:var(--muted);font-weight:600}
   .tile .ic{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-size:15px;background:var(--indigo-soft)}
   .tile .top{display:flex;align-items:center;justify-content:space-between}
-  .tile .delta{font-size:12px;font-weight:700}
   .up{color:var(--green)} .down{color:var(--red)} .flat{color:var(--muted)}
 
   .badge{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;padding:4px 10px;border-radius:999px;line-height:1;border:1px solid transparent;white-space:nowrap}
@@ -217,9 +216,6 @@
   @media(max-width:560px){.fnl-row{grid-template-columns:130px 1fr 88px}}
 
   /* Location / custodian map */
-  .zone{margin-bottom:16px}
-  .zone-head{display:flex;align-items:baseline;gap:10px;margin-bottom:8px;font-size:14px}
-  .zone-head .muted{font-size:12px}
   .bin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
   .bin{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:10px}
   .bin.empty{opacity:.6;border-style:dashed}
@@ -228,12 +224,6 @@
   .bin-bar{height:7px;background:var(--panel2);border-radius:99px;overflow:hidden}
   .bin-bar i{display:block;height:100%;border-radius:99px}
   .bin-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:5px;font-variant-numeric:tabular-nums}
-
-  /* Cost-class stack bars */
-  .coststack{display:flex;height:13px;border-radius:5px;overflow:hidden;background:var(--panel2);min-width:120px}
-  .coststack i{display:block;height:100%}
-  .leg{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);align-items:center;margin-top:8px}
-  .leg .k{display:flex;align-items:center;gap:5px} .leg .sw{width:11px;height:11px;border-radius:3px;display:inline-block}
 
   /* Chart */
   .chart-card{padding:14px}
@@ -309,7 +299,6 @@
 const LS_KEY='fa_recon_v2';
 const $=id=>document.getElementById(id);
 const money=n=>(n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString();
-const money2=n=>(n<0?'-$':'$')+Math.abs(n).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
 const moneyK=n=>{const a=Math.abs(n);if(a>=1e6)return (n<0?'-$':'$')+(a/1e6).toFixed(2)+'M';if(a>=1e3)return (n<0?'-$':'$')+(a/1e3).toFixed(0)+'K';return money(n);};
 const num=n=>Math.round(n).toLocaleString();
 const pct=n=>(n>=0?'+':'')+n.toFixed(1)+'%';
@@ -381,7 +370,6 @@ const TXN_TYPES={
 let _seq=0; function id(){return 'x'+(Date.now().toString(36))+(_seq++).toString(36);}
 const TODAY='2026-06-15';
 function daysUntil(d){ return Math.round((new Date(d+'T00:00:00')-new Date(TODAY+'T00:00:00'))/86400000); }
-function monthsBetween(a,b){const x=new Date(a+'-01'),y=new Date(b+'-01');return (y.getFullYear()-x.getFullYear())*12+(y.getMonth()-x.getMonth());}
 
 /* Period journal — each posting drives the cost / CIP / accum-dep roll-forwards.
    acct = the asset-class account for @class postings; acct2 = the other class for reclasses. */
